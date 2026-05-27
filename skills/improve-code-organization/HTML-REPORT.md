@@ -46,7 +46,7 @@ Each candidate is one `<article>`:
 
 - **Title** — short, names the change (e.g. "Split `auth.ts` into session and permissions").
 - **Badge row** — three badges:
-  - **Pillar**: `naming` (indigo), `scoping` (violet), `folders` (teal).
+  - **Pillar**: `folders` (teal), `naming` (indigo), `scoping` (violet).
   - **Recommendation strength**: `Strong` = emerald, `Worth exploring` = amber, `Speculative` = slate.
   - **Blast radius**: `S` (≤5 imports), `M` (5–25), `L` (25+), rendered as a small monospaced tag.
 - **Before / After file tree** — the centrepiece. Two columns, side by side. See patterns below.

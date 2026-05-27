@@ -1,11 +1,11 @@
 ---
 name: improve-code-organization
-description: Find naming, scoping, and folder-structure problems in a codebase, and propose changes that make the file tree navigable on its own. Use when the user wants to rename files, tighten what lives in each file, restructure folders, or make a codebase legible at a glance.
+description: Find folder-structure, naming, and scoping problems in a codebase, and propose changes that make the file tree navigable on its own. Use when the user wants to restructure folders, rename files, tighten what lives in each file, or make a codebase legible at a glance.
 ---
 
 # Improve Code Organization
 
-Surface organization friction and propose changes that make the **directory listing itself documentation** — so a reader who has never seen the codebase can guess where a thing lives, open the file they expect, and find what its name promised. Three pillars: **naming**, **scoping**, **folders**.
+Surface organization friction and propose changes that make the **directory listing itself documentation** — so a reader who has never seen the codebase can guess where a thing lives, open the file they expect, and find what its name promised. Three lenses, applied outer-to-inner: **folders**, then **naming**, then **scoping**.
 
 ## Glossary
 
@@ -29,13 +29,13 @@ Key tests:
 
 ### 1. Explore
 
-Use the Agent tool with `subagent_type=Explore` to walk the codebase and ask these questions of every file and folder you encounter. Each pillar's symptoms, tests, and mechanics live in its own file:
+Use the Agent tool with `subagent_type=Explore` to walk the codebase **top-down**: folder structure first, then per-file naming, then file-internal scope. Outer decisions frame inner ones — a file named `rules.ts` is fine inside `pricing/` and useless inside `utils/`, so settle the folder before re-judging the name. Expect to iterate: a folder problem often surfaces *through* naming friction (a folder full of files that can't be coherently named is the diagnostic for a bad folder), in which case go back up a level.
 
-- **Does the file's name fit its contents?** The name should predict what's inside; the contents should deliver what the name promises. Look for **drifted** names (file grew past its name), **generic** names (could hold anything), and over- or under-promising names — see [NAMING.md](NAMING.md).
-- **Should this file be split, or should these files be combined?** A file holding two unrelated concerns has **mixed scope** and should split. A single concern spread thin across many tiny files is **fragmented** and should combine. See [SCOPING.md](SCOPING.md).
-- **Does the folder predict its contents, and are its files at the same level of abstraction?** Folders should make a checkable claim; sibling abstractions belong as sibling folders. Look for generic folders without a bounded convention, type-based folders without reason, mismatched contents, and oversized folders — see [FOLDERS.md](FOLDERS.md).
+Ask these three questions, in order, of every folder and the files inside it. Each lens's symptoms, tests, and mechanics live in its own file:
 
-Path friction (`../../../` import chains, awkward sibling folder names, files that always change together but live apart) is often a folder problem masquerading as a path problem.
+1. **Does the folder predict its contents, and are its files at the same level of abstraction?** Folders should make a checkable claim; sibling abstractions belong as sibling folders. Look for generic folders without a bounded convention, type-based folders without reason, mismatched contents, oversized folders, and path friction (`../../../` import chains often signal a folder that's wrong, not a path that's wrong). See [FOLDERS.md](FOLDERS.md).
+2. **Does each file's name fit its contents?** The name should predict what's inside; the contents should deliver what the name promises. Look for **drifted** names (file grew past its name), **generic** names (could hold anything), and over- or under-promising names — see [NAMING.md](NAMING.md).
+3. **Should this file be split, or should these files be combined?** A file holding two unrelated concerns has **mixed scope** and should split. A single concern spread thin across many tiny files is **fragmented** and should combine. See [SCOPING.md](SCOPING.md).
 
 ### 2. Present candidates as an HTML report
 
