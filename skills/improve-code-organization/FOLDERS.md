@@ -6,19 +6,37 @@ A folder is a **claim** about what's inside. The claim is checkable: does the fo
 
 ## Symptoms of a bad folder
 
-- **Generic names** — `utils/`, `helpers/`, `lib/`, `common/`, `shared/`, `misc/`, `core/`. These make no specific claim, so nothing can violate them. They become junk drawers by gravity.
-- **Type-based folders** — `interfaces/`, `types/`, `classes/`, `constants/`, `enums/`. Groups files that never change together; separates files that always change together.
-- **Tech-stack folders** at the top level of a feature-organized project — `controllers/`, `models/`, `views/` when the rest of the project is grouped by feature. Inconsistent shape.
+A folder name is rarely bad in isolation — it's bad when it gives no useful prediction *in this project*. Several common patterns become smells when unbounded, inconsistent with the surrounding shape, or hiding unrelated concerns. See [Allowed exceptions](#allowed-exceptions) below for when these same names are fine.
+
+- **Unbounded generic names** — `utils/`, `helpers/`, `lib/`, `common/`, `shared/`, `misc/`, `core/`. A smell when they grow without scope: anything can land there, and nothing can violate the name. A small, scoped `utils/` for genuinely cross-cutting helpers (e.g. string formatting) can be fine — the smell is gravity, not the letters.
+- **Type-based folders without a reason** — `interfaces/`, `types/`, `classes/`, `constants/`, `enums/`. A smell when types are scattered into them away from the behaviour they describe. Legitimate when types are themselves the public surface (generated types, schema definitions, a published type package).
+- **Tech-stack folders inconsistent with the project shape** — `controllers/`, `models/`, `views/` mixed into an otherwise feature-organized codebase. The smell is the inconsistency, not the names; an MVC app where `controllers/` is the dominant shape is fine.
 - **Empty-ish folders** — three files in a folder named for what *might* go there someday. Speculative groupings.
-- **Cousin folders that always change together** — `order/` and `pricing/` whose files appear in every commit together. They're one concept that's been split prematurely.
-- **One huge folder** — 80 files all at the same level. No structure means no claim.
-- **Folder name doesn't match its files' names.** A folder called `billing/` containing `invoice.ts`, `subscription.ts`, `payment.ts` — fine. A folder called `billing/` containing `email-sender.ts`, `csv-export.ts`, `feature-flags.ts` — the folder name is a lie.
+- **Cousin folders that always change together** — `order/` and `pricing/` whose files appear in every commit together. Possibly one concept that's been split prematurely — but check whether the co-change is a refactor artefact before merging.
+- **One folder so large that scanning stops working** — a flat folder where you can no longer skim and find what you want. There's no universal file count; generated code, routes, fixtures, assets, and data folders can be large and still coherent. The signal is that *the reader's scan fails*, not the size on its own.
+- **Folder name doesn't match its files' names.** A folder called `billing/` containing `invoice.ts`, `subscription.ts`, `payment.ts` is plausibly fine — though in some domains those are three distinct bounded contexts that shouldn't share a folder. A folder called `billing/` containing `email-sender.ts`, `csv-export.ts`, `feature-flags.ts` is a lie: the name predicts nothing about the contents.
+
+## Allowed exceptions
+
+Conventional folders — `routes/`, `migrations/`, `schemas/`, `fixtures/`, `controllers/` in an MVC app, `types/` for a generated or public type surface, `pages/` and `components/` in a framework that mandates them — are acceptable when the convention is **explicit and bounded**:
+
+- **Explicit** — the project (or its framework) has an established convention that says what goes in the folder. A reader who knows the convention can predict the contents.
+- **Bounded** — the folder holds only what the convention says it holds. The moment unrelated code starts landing there, the convention has eroded and the folder is back to being a junk drawer.
+
+Common categories that legitimately keep role/type names:
+
+- **Framework conventions** — `routes/`, `pages/`, `components/`, `middleware/`, `migrations/`, `controllers/`/`models/`/`views/` in MVC.
+- **Generated or schema-only code** — `generated/`, `schemas/`, `proto/`, a `types/` folder that publishes a project's external type surface.
+- **Test infrastructure** — `e2e/`, `integration/`, `fixtures/`, `test-utils/` when not co-located.
+- **Build / ops artefacts** — `scripts/`, `infra/`, `deploy/`, `ci/`.
+
+The rule isn't "never use these names." The rule is: the name must give a useful prediction *in this project*. `utils/` for cross-cutting string formatting in a small repo is fine. `utils/` as the default destination for anything that didn't fit elsewhere is the smell.
 
 ## Tests to apply
 
 - **Predictiveness test.** From the folder name alone, what files would you expect to find? Open the folder. How wide is the gap?
-- **Co-change test.** Look at `git log`. Files in the same folder should change together more often than files in different folders. If a folder's files never co-change, the grouping is wrong. If files across two folders always co-change, those folders should probably merge.
-- **Import-direction test.** Pick a folder. What does it import? What imports it? If a folder imports from everywhere and is imported by nothing, it's probably mis-scoped (often a `utils/`). If imports run cleanly in one direction, the folder names a real layer.
+- **Co-change test.** Look at `git log` — co-change is a *clue about cohesion*, not proof. Files in the same folder tending to change together is a positive signal; files across two folders always changing together is a hint they may belong together. Discount the signal for new modules (no history yet), broad refactors (noisy co-change across the tree), and intentionally stable abstractions (low change rate doesn't mean low cohesion).
+- **Dependency-direction test.** Pick a folder. What does it import? What imports it? The question isn't "does it import a lot / get imported a lot" — it's *does the direction match the folder's intended role?* A composition root, CLI entrypoint, job runner, or adapter folder *should* import from everywhere and be imported by little. A domain-core folder should be the opposite. The smell is direction that contradicts the role the name implies.
 - **Sibling test.** Do the sibling folders make sense as a set? `auth/`, `billing/`, `orders/`, `utils/` — three feature names and one junk drawer. The set is incoherent.
 - **Depth test.** Are you four folders deep just to reach the file you want? Each level of nesting should add a meaningful distinction. If a sub-folder contains one file, the sub-folder isn't earning its place.
 
@@ -30,7 +48,7 @@ The right organization depends on the project, but the heuristics are stable:
 - **Prefer concept names over role names.** `order-intake/` is more predictive than `services/`. `pricing-rules/` is more predictive than `domain/`.
 - **One level of nesting per real distinction.** Don't nest just for cosmetics.
 - **Match the project's existing shape.** If the rest of the codebase is grouped by feature, don't introduce a layer of `controllers/` underneath. Consistency of shape is part of predictiveness.
-- **Tests live with their code, not in a parallel `tests/` tree** — unless the project's convention is otherwise. Co-location of test and source is a strong default; it makes the test discoverable from the source it covers.
+- **Tests live with their code by default**, unless the project's convention is otherwise. Co-locating unit tests next to source makes them discoverable from the file they cover. Common exceptions: **black-box integration tests**, **end-to-end tests**, **contract tests**, **fixtures**, and **shared test utilities** often deserve their own top-level folders because they aren't tied to a single source file and frequently have their own tooling, runners, or environments.
 
 ## Fixing folders
 
