@@ -4,7 +4,7 @@ How to evaluate and improve file names. Assumes the vocabulary in [LANGUAGE.md](
 
 A name is a **promise**. The whole file should be derivable from its name; the file's path should be guessable from a description of what it does. When that fails, the name is wrong — or the scope is.
 
-**Rename before refactor.** A bad name will mislead any later work on the file, and any reviewer of a refactor PR. Fix the name first — ideally in its own commit, so the rename is reviewable separately from the change in contents.
+**Rename before refactor.** A bad name will mislead any later work on the file, and any reviewer of a refactor PR. Fix the name first — ideally in its own commit, so the rename is reviewable separately from the change in contents. Treat renames as architecture work, not cosmetic cleanup: names are signals, and bad ones cause real navigation cost.
 
 ## Symptoms of a bad name
 

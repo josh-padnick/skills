@@ -10,6 +10,8 @@ A file's **scope** is the set of concerns it contains. Three failure modes:
 
 The goal is **tight, cohesive** scope: a reader who understands one item in the file can predict why the others are there.
 
+**Tight scope ≠ tiny file.** "One thing per file" as a default rule produces fragmentation. The goal is one *concern*, which may be expressed in one function or many.
+
 ## Symptoms of mixed scope
 
 - **The "and" smell.** "This file handles X *and* Y." If you need "and" to describe it, you have two scopes.

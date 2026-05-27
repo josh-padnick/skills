@@ -25,7 +25,7 @@ Degree to which the things inside a file belong together. High cohesion means a 
 Placing things that change together physically near each other on disk. A correct folder co-locates files that change together; an incorrect folder either separates them or bundles unrelated files.
 
 **Folder**
-A grouping that names a real architectural concept. A folder is a **claim** about what's inside. Generic folders (`utils/`, `helpers/`, `lib/`, `common/`, `shared/`, `misc/`) make no claim and so cannot be checked — they are smells, not categories.
+A grouping that names a real architectural concept. A folder is a **claim** about what's inside. A generic name (`utils/`, `helpers/`, `lib/`, `common/`, `shared/`, `misc/`) earns its place only when the project's convention is explicit and bounded; otherwise it makes no checkable claim and tends to become a junk drawer.
 _Avoid_: directory (mechanically correct but loses the "claim" connotation), package, namespace.
 
 **Drift**
@@ -42,9 +42,3 @@ The central property of good organization. A name is predictive if a reader can 
 - **Co-location** is a property of a **Folder** (how well it groups files that change together).
 - **Predictiveness** is the cross-cutting test that applies to both **Names** and **Folders**.
 
-## Rejected framings
-
-- **"Just a renaming pass"**: names are signals; bad names cause real navigation cost and mis-prediction. Treat renames as architecture work, not cosmetic work.
-- **"Keep `utils/` if it works"**: it doesn't work — it's a black box that hides what's inside. Either name the grouping, or move the contents to where they belong.
-- **Organizing by type (e.g. all interfaces in one folder, all classes in another)**: groups files that never change together and separates files that always change together. Prefer organization by **concept** or **feature**.
-- **One-file-per-thing as a default rule**: produces **fragmentation**. Tight scope ≠ tiny file.
