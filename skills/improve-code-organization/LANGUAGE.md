@@ -34,16 +34,6 @@ When a file's contents have grown beyond what its name suggests. The most common
 **Predictiveness**
 The central property of good organization. A name is predictive if a reader can guess the scope from it; a folder is predictive if a reader can guess which file holds the thing they want. The whole skill aims at predictiveness.
 
-## Principles
-
-- **The predictiveness test.** From the name alone, can a stranger predict the scope? From the folder alone, can a stranger predict which file to open? If no, the name or folder needs work.
-- **The cohesion test.** If you split this file in two, would the two halves be logically distinct concerns? If yes, the scope is **mixed** — split it. If no, leave it.
-- **The fragmentation test.** If you merged these N files into one, would the result still be coherent and easy to scan? If yes, they were **fragmented** — merge them.
-- **The file tree is documentation.** A reader browsing the tree should be able to learn the architecture from path names alone, without opening files.
-- **Generic names are unnamed groupings.** `utils`, `helpers`, `common`, `shared`, `misc`, `lib` mean the real grouping has not been discovered yet. Either find the real name, or distribute the contents to where they actually belong.
-- **Rename before refactor.** A bad name will mislead the next refactor. Fix the name first.
-- **Preserve history.** Use the version-control rename (`git mv`) or the language-server rename. Copy-paste rename loses history and blame.
-
 ## Relationships
 
 - A **File** has exactly one **Name** and one **Scope**.

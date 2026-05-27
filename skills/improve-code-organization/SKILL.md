@@ -20,12 +20,13 @@ Use these terms exactly in every suggestion. Consistent language is the point �
 - **Drift** — when a file's contents have grown beyond what its name suggests.
 - **Predictiveness** — the central test: would a stranger find this file by guessing the path?
 
-Key principles (see [LANGUAGE.md](LANGUAGE.md) for the full list):
+Key principles:
 
 - **Predictiveness test**: from the name alone, can you predict the scope? From the folder alone, can you predict the file? If no, the name or folder is wrong.
 - **Cohesion test**: would splitting this file produce two logically distinct concerns? If yes, the scope is mixed.
+- **Fragmentation test**: would merging these N files into one produce something coherent and scannable? If yes, they were fragmented.
 - **The file tree is documentation.** Browsing the tree should teach the architecture.
-- **"utils," "helpers," "misc," "common," "shared"** are smells, not categories. They mean the real grouping has not been named yet.
+- **Generic folder names need a bounded convention.** `utils/`, `helpers/`, `shared/`, `common/` are fine when the project's convention is explicit and the contents respect it; they're a smell when they become the default home for anything that didn't fit elsewhere (see [FOLDERS.md](FOLDERS.md) for the full nuance).
 
 ## Process
 

@@ -45,6 +45,7 @@ The rule isn't "never use these names." The rule is: the name must give a useful
 The right organization depends on the project, but the heuristics are stable:
 
 - **Group by what changes together, not by what looks alike.** Files that ship in the same PR belong in the same folder. Files that share a type but no behaviour don't.
+- **Keep contents at the same level of abstraction.** A folder should read as one layer — opening it shouldn't show an orchestrator sitting next to the low-level pieces it composes. When sibling abstractions exist (two implementations of one interface, three adapters for one port), give each its own folder at the same level, rather than nesting one inside another or scattering them among unrelated files. **Convention exceptions:** some languages mandate flat packages — Go is the canonical case, where one package equals one folder. There, differentiate concerns with `prefix_name.go` filenames within the package, but still prefer same-altitude contents where the language permits.
 - **Prefer concept names over role names.** `order-intake/` is more predictive than `services/`. `pricing-rules/` is more predictive than `domain/`.
 - **One level of nesting per real distinction.** Don't nest just for cosmetics.
 - **Match the project's existing shape.** If the rest of the codebase is grouped by feature, don't introduce a layer of `controllers/` underneath. Consistency of shape is part of predictiveness.
