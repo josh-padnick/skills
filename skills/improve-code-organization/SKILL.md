@@ -29,11 +29,11 @@ Key tests:
 
 ### 1. Explore
 
-Use the Agent tool with `subagent_type=Explore` to walk the codebase organically and note where you experience friction. Each pillar's symptoms, tests, and mechanics live in its own file:
+Use the Agent tool with `subagent_type=Explore` to walk the codebase and ask these questions of every file and folder you encounter. Each pillar's symptoms, tests, and mechanics live in its own file:
 
-- Naming problems (drifted, generic, over- or under-promising names) — see [NAMING.md](NAMING.md).
-- Scope problems (mixed, fragmented, drifted contents) — see [SCOPING.md](SCOPING.md).
-- Folder problems (generic without bounded convention, type-based without reason, mismatched, oversized) — see [FOLDERS.md](FOLDERS.md).
+- **Does the file's name fit its contents?** The name should predict what's inside; the contents should deliver what the name promises. Look for **drifted** names (file grew past its name), **generic** names (could hold anything), and over- or under-promising names — see [NAMING.md](NAMING.md).
+- **Should this file be split, or should these files be combined?** A file holding two unrelated concerns has **mixed scope** and should split. A single concern spread thin across many tiny files is **fragmented** and should combine. See [SCOPING.md](SCOPING.md).
+- **Does the folder predict its contents, and are its files at the same level of abstraction?** Folders should make a checkable claim; sibling abstractions belong as sibling folders. Look for generic folders without a bounded convention, type-based folders without reason, mismatched contents, and oversized folders — see [FOLDERS.md](FOLDERS.md).
 
 Path friction (`../../../` import chains, awkward sibling folder names, files that always change together but live apart) is often a folder problem masquerading as a path problem.
 
