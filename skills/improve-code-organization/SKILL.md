@@ -9,62 +9,41 @@ Surface organization friction and propose changes that make the **directory list
 
 ## Glossary
 
-Use these terms exactly in every suggestion. Consistent language is the point — don't drift into "module," "component," "package," "section." Full definitions in [LANGUAGE.md](LANGUAGE.md).
+Use these terms exactly in every suggestion. Don't drift into "module," "component," "package," or "section." Full definitions in [LANGUAGE.md](LANGUAGE.md).
 
-- **File** — the unit of code on disk. Has a **name** and a **scope**.
-- **Name** — what the file is called. A name **predicts** scope; a good name makes the file findable by guessing.
-- **Scope** — the set of concerns inside a file. **Tight** = one clear concern. **Mixed** = unrelated concerns sharing a file. **Fragmented** = one concern split across many files.
-- **Cohesion** — degree to which the things inside a file belong together. High cohesion is the goal of scoping.
-- **Co-location** — placing things that change together near each other on disk. A folder either co-locates correctly or it doesn't.
-- **Folder** — a grouping that should name a real architectural concept (not "utils," "helpers," "misc"). A folder is a **claim** about what's inside.
-- **Drift** — when a file's contents have grown beyond what its name suggests.
-- **Predictiveness** — the central test: would a stranger find this file by guessing the path?
+- **File** — the unit of code on disk; has a **name** and a **scope**.
+- **Scope** — what's inside a file; **tight**, **mixed**, or **fragmented**.
+- **Cohesion** — how well a file's contents belong together.
+- **Folder** — a **claim** about what's inside; should predict its contents.
+- **Co-location** — placing files that change together near each other.
+- **Drift** — when a file's contents have outgrown its name.
+- **Predictiveness** — the central property: can a stranger guess the path?
 
-Key principles:
+Key tests:
 
-- **Predictiveness test**: from the name alone, can you predict the scope? From the folder alone, can you predict the file? If no, the name or folder is wrong.
-- **Cohesion test**: would splitting this file produce two logically distinct concerns? If yes, the scope is mixed.
-- **Fragmentation test**: would merging these N files into one produce something coherent and scannable? If yes, they were fragmented.
-- **The file tree is documentation.** Browsing the tree should teach the architecture.
-- **Generic folder names need a bounded convention.** `utils/`, `helpers/`, `shared/`, `common/` are fine when the project's convention is explicit and the contents respect it; they're a smell when they become the default home for anything that didn't fit elsewhere (see [FOLDERS.md](FOLDERS.md) for the full nuance).
+- **Predictiveness test** — predict scope from name; predict file from folder. If no, the name or folder is wrong.
+- **Cohesion test** — would splitting this file produce two distinct concerns? If yes, scope is mixed.
+- **Fragmentation test** — would merging these N files produce one coherent file? If yes, they were fragmented.
 
 ## Process
 
 ### 1. Explore
 
-Use the Agent tool with `subagent_type=Explore` to walk the codebase. Don't follow rigid heuristics — explore organically and note where you experience friction:
+Use the Agent tool with `subagent_type=Explore` to walk the codebase organically and note where you experience friction. Each pillar's symptoms, tests, and mechanics live in its own file:
 
-- **Names that lie or under-promise** — files whose contents don't match what the name suggests (drift), or whose names are so generic they could hold anything (`helpers.ts`, `utils.py`, `common.go`).
-- **Mixed scope** — files holding two or more unrelated concerns. Apply the **cohesion test**: would a split produce two coherent halves?
-- **Fragmented scope** — one concept spread across many tiny files when one file would tell the story better.
-- **Folders that don't predict their contents** — a `services/` folder containing mixed business logic, transport, and data access; a `lib/` folder that's a junk drawer.
-- **Co-location violations** — files that always change together but live far apart, or files that never change together but share a folder.
-- **Path friction** — `import` lines with awkward `../../../` chains often signal a folder that's wrong, not a path that's wrong.
+- Naming problems (drifted, generic, over- or under-promising names) — see [NAMING.md](NAMING.md).
+- Scope problems (mixed, fragmented, drifted contents) — see [SCOPING.md](SCOPING.md).
+- Folder problems (generic without bounded convention, type-based without reason, mismatched, oversized) — see [FOLDERS.md](FOLDERS.md).
 
-Apply the **predictiveness test** to anything suspect: could a new reader guess this file's path from a description of what it does? A "no" is the signal.
-
-See [NAMING.md](NAMING.md), [SCOPING.md](SCOPING.md), and [FOLDERS.md](FOLDERS.md) for the deeper criteria on each pillar.
+Path friction (`../../../` import chains, awkward sibling folder names, files that always change together but live apart) is often a folder problem masquerading as a path problem.
 
 ### 2. Present candidates as an HTML report
 
-Write a self-contained HTML file to the OS temp directory so nothing lands in the repo. Resolve the temp dir from `$TMPDIR`, falling back to `/tmp` (or `%TEMP%` on Windows), and write to `<tmpdir>/code-organization-review-<timestamp>.html` so each run gets a fresh file. Open it for the user — `xdg-open <path>` on Linux, `open <path>` on macOS, `start <path>` on Windows — and tell them the absolute path.
+Write a self-contained HTML file to the OS temp directory so nothing lands in the repo. Resolve the temp dir from `$TMPDIR`, falling back to `/tmp` (or `%TEMP%` on Windows), and write to `<tmpdir>/code-organization-review-<timestamp>.html`. Open it for the user — `xdg-open <path>` on Linux, `open <path>` on macOS, `start <path>` on Windows — and tell them the absolute path.
 
-The report uses **Tailwind via CDN** for layout and **Mermaid via CDN** for diagrams where a tree/graph reliably communicates the change. The centrepiece of each card is a **before/after file tree** — show the actual paths, with renames, splits, merges, and moves rendered visually. Be visual.
+Each candidate is rendered as a card with a **before/after file tree** as the centrepiece. End with a **Top recommendation** section.
 
-For each candidate, render as a card:
-
-- **Pillar** — `naming`, `scoping`, or `folders` (a candidate can touch more than one; pick the dominant one)
-- **Paths** — the file paths involved, monospaced
-- **Problem** — why the current organization causes friction (one sentence)
-- **Change** — what would move, split, merge, or be renamed (one sentence)
-- **Before / After file tree** — side-by-side, showing the actual paths
-- **Wins** — bullets in glossary terms (predictiveness, cohesion, co-location)
-- **Recommendation strength** — one of `Strong`, `Worth exploring`, `Speculative`, rendered as a badge
-- **Blast radius** — rough count of import sites / references touched, so the user can weigh effort
-
-End the report with a **Top recommendation** section: which candidate you'd tackle first and why.
-
-See [HTML-REPORT.md](HTML-REPORT.md) for the full HTML scaffold, tree-diff patterns, and styling guidance.
+See [HTML-REPORT.md](HTML-REPORT.md) for the full scaffold, card structure, badge taxonomy, and styling guidance.
 
 Do NOT start renaming or moving files yet. After the file is written, ask the user: "Which of these would you like to apply?"
 
@@ -72,11 +51,10 @@ Do NOT start renaming or moving files yet. After the file is written, ask the us
 
 Once the user picks a candidate, walk the change with them before touching the disk:
 
-- **Confirm the new names and paths** — read them out loud as a sanity check. If a name still feels off, iterate before moving.
-- **List the call sites / imports** — count what will need updating. If the count is surprising, flag it; sometimes the surprise is the signal that the rename was wrong.
-- **Plan rename vs. split vs. merge vs. move** as distinct steps, even if they happen in one commit. Each is reversible if separated.
-- **Use the version-control rename, not delete-and-create.** `git mv` (or the language-server rename) preserves history; copy-paste loses it.
-- **Update imports atomically.** Don't leave the tree in a broken state between rename and import update.
-- **Apply the predictiveness test once more after the change.** If the new tree still doesn't reveal the architecture, the change wasn't enough.
+- **Confirm the new names and paths** out loud. Iterate if a name still feels off.
+- **List the call sites** that will need updating. A surprising count can be a signal the rename was wrong.
+- **Plan rename, split, merge, and move as distinct steps**, even if they happen in one commit — each is reversible if separated.
+- **Use the version-control rename** (`git mv` or the language-server rename) so history follows. See the Mechanics section of [NAMING.md](NAMING.md) and the Fixing folders section of [FOLDERS.md](FOLDERS.md) for per-pillar detail.
+- **Apply the predictiveness test again** after the change. If the new tree still doesn't reveal the architecture, the change wasn't enough.
 
 If during the conversation a new grouping concept emerges that doesn't exist anywhere yet, name it — and use that name consistently across files, folders, and any prose. **The naming we land on is itself an artifact** worth preserving in a code comment, ADR, or CONTEXT.md if the project has one.
