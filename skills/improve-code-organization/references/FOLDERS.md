@@ -39,6 +39,7 @@ The rule isn't "never use these names." The rule is: the name must give a useful
 - **Dependency-direction test.** Pick a folder. What does it import? What imports it? The question isn't "does it import a lot / get imported a lot" — it's *does the direction match the folder's intended role?* A composition root, CLI entrypoint, job runner, or adapter folder *should* import from everywhere and be imported by little. A domain-core folder should be the opposite. The smell is direction that contradicts the role the name implies.
 - **Sibling test.** Do the sibling folders make sense as a set? `auth/`, `billing/`, `orders/`, `utils/` — three feature names and one junk drawer. The set is incoherent.
 - **Depth test.** Are you four folders deep just to reach the file you want? Each level of nesting should add a meaningful distinction. If a sub-folder contains one file, the sub-folder isn't earning its place.
+- **Boundary test.** Would this folder let a reader forget implementation detail, or does it merely add another hop? A folder boundary earns its place by hiding a real distinction and making the next search easier.
 
 ## Organizing principles
 
@@ -46,6 +47,7 @@ The right organization depends on the project, but the heuristics are stable:
 
 - **Group by what changes together, not by what looks alike.** Files that ship in the same PR belong in the same folder. Files that share a type but no behaviour don't.
 - **Keep contents at the same level of abstraction.** A folder should read as one layer — opening it shouldn't show an orchestrator sitting next to the low-level pieces it composes. When sibling abstractions exist (two implementations of one interface, three adapters for one port), give each its own folder at the same level, rather than nesting one inside another or scattering them among unrelated files. **Convention exceptions:** some languages mandate flat packages — Go is the canonical case, where one package equals one folder. There, differentiate concerns with `prefix_name.go` filenames within the package, but still prefer same-altitude contents where the language permits.
+- **Prefer deep folder claims.** A folder with a narrow, meaningful public surface can hide internal mess while still being easy to search. A folder that only groups thin wrappers, pass-through files, or type buckets adds names without reducing reader burden.
 - **Prefer concept names over role names.** `order-intake/` is more predictive than `services/`. `pricing-rules/` is more predictive than `domain/`.
 - **One level of nesting per real distinction.** Don't nest just for cosmetics.
 - **Match the project's existing shape.** If the rest of the codebase is grouped by feature, don't introduce a layer of `controllers/` underneath. Consistency of shape is part of predictiveness.

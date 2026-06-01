@@ -2,6 +2,16 @@
 
 The organization review is rendered as a single self-contained HTML file in the OS temp directory. Tailwind and Mermaid both come from CDNs. The centrepiece of every candidate card is a **before/after file tree** — show the actual paths so the reader can see exactly what moves, splits, merges, or renames.
 
+## Contents
+
+- [Scaffold](#scaffold)
+- [Header](#header)
+- [Candidate card](#candidate-card)
+- [Before / After tree patterns](#before--after-tree-patterns)
+- [Style guidance](#style-guidance)
+- [Top recommendation section](#top-recommendation-section)
+- [Tone](#tone)
+
 ## Scaffold
 
 ```html
@@ -53,6 +63,7 @@ Each candidate is one `<article>`:
 - **Problem** — one sentence. What hurts.
 - **Change** — one sentence. What moves, splits, merges, or is renamed.
 - **Wins** — bullets, ≤6 words each. e.g. "Predictive name", "Cohesion: one concern per file", "Co-locates files that co-change".
+- **Verification** — one terse line naming the checks that keep the change structural.
 
 No paragraphs of explanation. If the tree needs a paragraph, redraw the tree.
 
@@ -127,7 +138,7 @@ A small grid of file × file cells, shaded by how often they appear in the same 
 
 ## Top recommendation section
 
-One larger card. Candidate name, one sentence on why, anchor link to its card. That's it.
+One larger card. Candidate name, one sentence on why, anchor link to its card, and the verification line. That's it.
 
 ## Tone
 

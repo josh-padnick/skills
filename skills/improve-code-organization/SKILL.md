@@ -1,11 +1,23 @@
 ---
 name: improve-code-organization
-description: Find folder-structure, naming, and scoping problems in a codebase, and propose changes that make the file tree navigable on its own. Use when the user wants to restructure folders, rename files, tighten what lives in each file, or make a codebase legible at a glance.
+description: Find folder-structure, naming, and scoping problems in a codebase, then propose behavior-preserving rename, move, split, or merge candidates that make the file tree navigable on its own. Use when the user wants to restructure folders, rename files, tighten what lives in each file, reduce organization friction, or make a codebase legible at a glance.
 ---
 
 # Improve Code Organization
 
-Surface organization friction and propose changes that make the **directory listing itself documentation** — so a reader who has never seen the codebase can guess where a thing lives, open the file they expect, and find what its name promised. Three lenses, applied outer-to-inner: **folders**, then **naming**, then **scoping**.
+Surface organization friction and propose changes that make the **file tree itself documentation** — so a reader who has never seen the codebase can guess where a thing lives, open the file they expect, and find what its name promised. Three lenses, applied outer-to-inner: **folders**, then **naming**, then **scoping**.
+
+## Operating bias
+
+Use one primary decision pressure: **reduce reader complexity by increasing predictiveness**. The best change is not the largest cleanup; it is the smallest rename, move, split, or merge that lets a stranger predict the right file from the folder tree and predict the file's scope from its name.
+
+Secondary guardrails:
+
+- Treat organization work as **behavior-preserving refactoring** unless the user explicitly asks for behavior changes.
+- Prefer project-specific concepts over type buckets, roles, or implementation mechanisms.
+- Split or merge by total reader burden, not by file size, habit, or "one thing per file" slogans.
+- Every new folder or file boundary must hide more complexity than it adds.
+- Stop before speculative architecture. If the next change would not improve predictiveness, cohesion, or co-location for the current task, leave it as a note.
 
 ## Glossary
 
@@ -24,6 +36,8 @@ Key tests:
 - **Predictiveness test** — predict scope from name; predict file from folder. If no, the name or folder is wrong.
 - **Cohesion test** — would splitting this file produce two distinct concerns? If yes, scope is mixed.
 - **Fragmentation test** — would merging these N files produce one coherent file? If yes, they were fragmented.
+- **Boundary test** — does this new file or folder boundary remove more reader complexity than it introduces? If no, don't create it.
+- **Behavior test** — can this organization change be reviewed without reasoning about changed behavior? If no, split the behavior change from the rename, move, split, or merge.
 
 ## Process
 
@@ -45,6 +59,13 @@ Each candidate is rendered as a card with a **before/after file tree** as the ce
 
 See [references/HTML-REPORT.md](references/HTML-REPORT.md) for the full scaffold, card structure, badge taxonomy, and styling guidance.
 
+Each candidate must include:
+
+- The specific friction: failed predictiveness, mixed scope, fragmented scope, weak co-location, or incoherent folder claim.
+- The smallest behavior-preserving change that addresses it.
+- Blast radius: affected imports, tests, build config, generated files, or public paths.
+- Verification: which tests, type checks, search checks, or manual inspections would prove the change stayed structural.
+
 Do NOT start renaming or moving files yet. After the file is written, ask the user: "Which of these would you like to apply?"
 
 ### 3. Apply changes
@@ -56,5 +77,16 @@ Once the user picks a candidate, walk the change with them before touching the d
 - **Plan rename, split, merge, and move as distinct steps**, even if they happen in one commit — each is reversible if separated.
 - **Use the version-control rename** (`git mv` or the language-server rename) so history follows. See the Mechanics section of [references/NAMING.md](references/NAMING.md) and the Fixing folders section of [references/FOLDERS.md](references/FOLDERS.md) for per-pillar detail.
 - **Apply the predictiveness test again** after the change. If the new tree still doesn't reveal the architecture, the change wasn't enough.
+- **Run the smallest relevant verification** after each applied step: import search for moves, type check for path updates, tests for touched behavior contracts, and project validation scripts if present.
+- **Keep structural and behavior edits separate** in the diff where practical. If behavior must change, say so and stop treating it as organization-only work.
 
 If during the conversation a new grouping concept emerges that doesn't exist anywhere yet, name it — and use that name consistently across files, folders, and any prose. **The naming we land on is itself an artifact** worth preserving in a code comment, ADR, or CONTEXT.md if the project has one.
+
+## Final checklist
+
+- Did the proposal reduce the facts a reader must hold to find and understand the file?
+- Does every recommended folder, file, and name make a checkable claim?
+- Did each split or merge improve cohesion, co-location, or predictiveness?
+- Are behavior changes absent, explicitly separated, or called out as out of scope?
+- Is the blast radius counted and the verification path concrete?
+- Did the recommendation stop before speculative cleanup?

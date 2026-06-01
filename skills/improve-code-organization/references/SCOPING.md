@@ -12,6 +12,8 @@ The goal is **tight, cohesive** scope: a reader who understands one item in the 
 
 **Tight scope ≠ tiny file.** "One thing per file" as a default rule produces fragmentation. The goal is one *concern*, which may be expressed in one function or many.
 
+Scope work is structural by default. Splits and merges should preserve behavior, keep the diff reviewable, and stop once the file boundary reduces reader burden. Do not turn a scope fix into a rewrite unless the user explicitly asks for behavior changes.
+
 ## Symptoms of mixed scope
 
 - **The "and" smell.** "This file handles X *and* Y." If you need "and" to describe it, you have two scopes.
@@ -39,6 +41,7 @@ The goal is **tight, cohesive** scope: a reader who understands one item in the 
 - **Fragmentation test.** If you merged these N files into one, would the result still be coherent and easy to scan? If yes, they were fragmented; merge.
 - **Co-change test.** Look at `git log` over the last 6–12 months. Files that always change together are candidates for merging. Lines that always change separately within one file are candidates for splitting.
 - **Mental model test.** Describe the file in one sentence without using "and" or "various." If you can't, the scope is too wide.
+- **Boundary test.** Does the split or merge let a reader understand the concern with fewer jumps and fewer facts in memory? If not, leave the file alone.
 
 ## Splitting a mixed file
 
