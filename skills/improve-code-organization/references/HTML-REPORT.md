@@ -46,7 +46,7 @@ The organization review is rendered as a single self-contained HTML file in the 
 
 ## Header
 
-Repo name, date, and a compact legend: amber = rename, blue = move, emerald = new file, red strikethrough = removed file. Also include a blast-radius legend: `Small` = ≤5 affected references, `Medium` = 6–25, `Large` = 26+. No introduction paragraph — straight into the candidates.
+Repo name, date, and a compact legend: amber = rename, blue = move, emerald = new file, red strikethrough = removed file. Also include a blast-radius legend: `Small` = ≤5 affected references, `Medium` = 6–25, `Large` = 26+. Include a compact source note naming the vendored `agent-rules-books` rule summaries; if the report includes links, use source URLs or absolute local paths, not temp-relative links. No introduction paragraph — straight into the candidates.
 
 ## Candidate card
 
@@ -59,7 +59,8 @@ Each candidate is one `<article>`:
   - **Lens**: `folders` (teal), `naming` (indigo), `scoping` (violet), `smell` (rose), or `trace` (cyan). Use `smell` when the candidate comes directly from smell triage and does not map cleanly to folders, naming, or scoping; use `trace` when the vertical trace is the main evidence.
   - **Recommendation strength**: `Strong` = emerald, `Worth exploring` = amber, `Speculative` = slate.
   - **Blast radius**: spell out `Small`, `Medium`, or `Large`; include the count when known, e.g. `Blast radius: Small (3 refs)`. Do not use unexplained `S`, `M`, or `L` letters.
-- **Smell / lens** — one compact line when the candidate comes from [SMELLS.md](SMELLS.md), e.g. `suffix inconsistency · APoSD + Refactoring`.
+- **Rule basis** — required. Cite the rule lens or lenses and why they apply. Keep it compact, e.g. `APoSD: boundary must hide complexity · Refactoring: behavior-preserving small step`. Use architecture-oriented lenses (`Clean Architecture`, `DDD Distilled`, `Pragmatic Programmer`) only when they are actually doing diagnostic work.
+- **Smell** — include when the candidate comes from [SMELLS.md](SMELLS.md), e.g. `suffix inconsistency`.
 - **Trace** — include only when a vertical trace exposed the candidate, e.g. `signup form -> server action -> user profile write -> migration`.
 - **Before / After file tree** — the centrepiece. Two columns, side by side. See patterns below.
 - **Problem** — one sentence. What hurts.
@@ -141,7 +142,7 @@ A small grid of file × file cells, shaded by how often they appear in the same 
 
 ## Top recommendation section
 
-One larger card. Candidate name, one sentence on why, anchor link to its card, and the verification line. That's it.
+One larger card. Candidate name, one sentence on why, anchor link to its card, rule basis, and the verification line. That's it.
 
 ## Tone
 

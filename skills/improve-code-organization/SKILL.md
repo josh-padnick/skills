@@ -69,7 +69,8 @@ See [references/HTML-REPORT.md](references/HTML-REPORT.md) for the full scaffold
 Each candidate must include:
 
 - The specific friction: failed predictiveness, mixed scope, fragmented scope, weak co-location, or incoherent folder claim.
-- The smell and rule lens, when a smell is the reason the candidate matters.
+- The rule basis: which local [agent-rules-books](references/agent-rules-books/ATTRIBUTION.md) lens or lenses justify the candidate, plus a terse reason each one applies.
+- The smell, when a smell is the reason the candidate matters.
 - The smallest behavior-preserving change that addresses it.
 - Whether the candidate is local organization work or an alternative tree-shape exploration.
 - Whether to flag the candidate as architecture work rather than organization-only work.
