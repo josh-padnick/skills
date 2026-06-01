@@ -24,6 +24,33 @@ Smell -> Rule lens -> Diagnosis -> Candidate -> Verification -> Escalate?
 - **Verification** — import search, type check, tests, dependency rule, or manual tree inspection.
 - **Escalate?** — yes when the fix implies new seams, dependency direction changes, domain modeling, or ADR-level architecture work.
 
+## Vertical trace sanity check
+
+Use one representative request to test whether the file tree tells a coherent start-to-end story. Good traces include:
+
+- UI form -> client validation -> request action -> server validation -> use case -> persistence -> migration
+- API route -> authorization -> domain rule -> external adapter -> stored state
+- scheduled job -> query -> business decision -> write path -> emitted event
+
+Trace only far enough to judge organization. The goal is not full behavior analysis; it is to see whether a reader can predict the next file from the current file and whether the concepts stay named consistently across the path.
+
+Look for these trace smells:
+
+- **Concept changes names mid-flight** — the same business thing is called `lead`, `contact`, `profile`, and `userInput` across the path. Candidate: rename around one concept or identify separate bounded contexts.
+- **Layer jump surprise** — a UI file reaches directly into persistence, schema, or vendor details when an intermediate concept should own the knowledge. Candidate: surface as architecture-level if dependency direction must change.
+- **Policy hides in adapters** — business rules live in React forms, HTTP handlers, ORM mappers, or migration helpers. Candidate: flag the misplaced folder claim; escalate when moving rules changes seams.
+- **Persistence leads the story** — migration/table names shape application names even though the user-facing concept differs. Candidate: rename application files by concept and keep storage translation at the edge.
+- **End-to-end scatter** — one request crosses many folders whose names do not explain why each hop exists. Candidate: explore a use-case or business-capability tree shape.
+- **Trace-only folder** — a folder exists because it is one step in a request sequence (`prepare/`, `process/`, `finalize/`) rather than a stable concept. Candidate: reorganize around the durable concept unless temporal order is the domain fact.
+
+Record the trace as:
+
+```text
+Trace -> Breakpoint -> Rule lens -> Candidate -> Verification -> Escalate?
+```
+
+Use **A Philosophy of Software Design** when the trace exposes cognitive load, hidden dependencies, shallow pass-through files, or temporal coupling. Use **Clean Architecture** when dependency direction is wrong. Use **Domain-Driven Design Distilled** when the trace exposes confused business language. Use **Refactoring** to keep any proposed change behavior-preserving and reviewable.
+
 ## Tree smells
 
 - **Sibling abstraction mismatch** — a folder mixes high-level orchestrators, low-level primitives, adapters, schemas, scripts, or tests as siblings. Candidate: split by concept, layer, or role only when the new folders make checkable claims. Escalate if this exposes dependency-direction problems.

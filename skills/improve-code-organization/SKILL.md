@@ -40,6 +40,7 @@ Key tests:
 - **Boundary test** — does this new file or folder boundary remove more reader complexity than it introduces? If no, don't create it.
 - **Behavior test** — can this organization change be reviewed without reasoning about changed behavior? If no, split the behavior change from the rename, move, split, or merge.
 - **Smell triage** — record `Smell -> Rule lens -> Diagnosis -> Candidate -> Verification -> Escalate?`. See [references/SMELLS.md](references/SMELLS.md).
+- **Vertical trace test** — follow one representative request from start to end, such as React form to handler to validation to persistence to migration. If the path tells an incoherent story, diagnose the folder and name claims that broke the trace. See [references/SMELLS.md](references/SMELLS.md).
 
 ## Process
 
@@ -53,6 +54,7 @@ Ask these questions, in order, of every folder and the files inside it. Each len
 2. **Does each file's name fit its contents?** The name should predict what's inside; the contents should deliver what the name promises. Look for **drifted** names (file grew past its name), **generic** names (could hold anything), and over- or under-promising names — see [references/NAMING.md](references/NAMING.md).
 3. **Should this file be split, or should these files be combined?** A file holding two unrelated concerns has **mixed scope** and should split. A single concern spread thin across many tiny files is **fragmented** and should combine. See [references/SCOPING.md](references/SCOPING.md).
 4. **Is there a repeated smell that points beyond a local rename, move, split, or merge?** Check sibling abstraction mismatch, suffix inconsistency, shotgun organization, pass-through files, fragmented pipelines, and domain or dependency smells. See [references/SMELLS.md](references/SMELLS.md).
+5. **Does one vertical trace make sense from start to end?** Pick a representative user request or job and trace it across the tree. Use the trace to find misplaced concepts, misleading folder claims, hidden policy in adapters, and persistence details leaking into places they do not belong.
 
 When smells suggest a new way of organizing the codebase, present it as an **alternative tree-shape candidate**, not as a silent expansion of scope. Escalate to an architecture-focused skill when the candidate requires new seams, changed dependency direction, domain modeling, or ADR-level decisions.
 
@@ -97,6 +99,7 @@ If during the conversation a new grouping concept emerges that doesn't exist any
 - Did each split or merge improve cohesion, co-location, or predictiveness?
 - Did every smell-based suggestion name the rule lens and avoid treating the smell as proof by itself?
 - Are sibling files and folders at the same abstraction level, with suffixes and naming patterns used consistently?
+- Did at least one representative vertical trace support the diagnosis when the issue spans UI, application logic, persistence, or schema files?
 - Are behavior changes absent, explicitly separated, or called out as out of scope?
 - Is the blast radius counted and the verification path concrete?
 - Did the recommendation stop before speculative cleanup?

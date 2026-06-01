@@ -60,6 +60,7 @@ Each candidate is one `<article>`:
   - **Recommendation strength**: `Strong` = emerald, `Worth exploring` = amber, `Speculative` = slate.
   - **Blast radius**: spell out `Small`, `Medium`, or `Large`; include the count when known, e.g. `Blast radius: Small (3 refs)`. Do not use unexplained `S`, `M`, or `L` letters.
 - **Smell / lens** — one compact line when the candidate comes from [SMELLS.md](SMELLS.md), e.g. `suffix inconsistency · APoSD + Refactoring`.
+- **Trace** — include only when a vertical trace exposed the candidate, e.g. `signup form -> server action -> user profile write -> migration`.
 - **Before / After file tree** — the centrepiece. Two columns, side by side. See patterns below.
 - **Problem** — one sentence. What hurts.
 - **Change** — one sentence. What moves, splits, merges, or is renamed.
