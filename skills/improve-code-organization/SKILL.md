@@ -5,7 +5,7 @@ description: Find folder-structure, naming, scoping, and organization-smell prob
 
 # Improve Code Organization
 
-Surface organization friction and propose changes that make the **file tree itself documentation** — so a reader who has never seen the codebase can guess where a thing lives, open the file they expect, and find what its name promised. Three lenses, applied outer-to-inner: **folders**, then **naming**, then **scoping**.
+Surface organization friction and propose changes that make the **file tree itself documentation** — so a reader who has never seen the codebase can guess where a thing lives, open the file they expect, and find what its name promised. Apply three lenses outer-to-inner: **folders**, then **naming**, then **scoping**. Layer two cross-cutting sanity checks over them: **smell triage** and **vertical trace**.
 
 ## Operating bias
 
@@ -13,7 +13,7 @@ Use one primary decision pressure: **reduce reader complexity by increasing pred
 
 Secondary guardrails:
 
-- Ground each diagnosis in one rule lens from `ciembor/agent-rules-books`: **A Philosophy of Software Design** by default, **Refactoring** for safety, and **Clean Architecture** or **Domain-Driven Design Distilled** only when dependency direction or domain boundaries are the real issue.
+- Ground each diagnosis in one local rule lens from [references/agent-rules-books](references/agent-rules-books/ATTRIBUTION.md): **A Philosophy of Software Design** by default, **Refactoring** for safety, and **Clean Architecture** or **Domain-Driven Design Distilled** only when dependency direction or domain boundaries are the real issue.
 - Treat organization work as **behavior-preserving refactoring** unless the user explicitly asks for behavior changes.
 - Prefer project-specific concepts over type buckets, roles, or implementation mechanisms.
 - Split or merge by total reader burden, not by file size, habit, or "one thing per file" slogans.
@@ -39,7 +39,7 @@ Key tests:
 - **Fragmentation test** — would merging these N files produce one coherent file? If yes, they were fragmented.
 - **Boundary test** — does this new file or folder boundary remove more reader complexity than it introduces? If no, don't create it.
 - **Behavior test** — can this organization change be reviewed without reasoning about changed behavior? If no, split the behavior change from the rename, move, split, or merge.
-- **Smell triage** — record `Smell -> Rule lens -> Diagnosis -> Candidate -> Verification -> Escalate?`. See [references/SMELLS.md](references/SMELLS.md).
+- **Smell triage** — record `Smell -> Rule lens -> Diagnosis -> Candidate -> Verification -> Architecture flag?`. See [references/SMELLS.md](references/SMELLS.md).
 - **Vertical trace test** — follow one representative request from start to end, such as React form to handler to validation to persistence to migration. If the path tells an incoherent story, diagnose the folder and name claims that broke the trace. See [references/SMELLS.md](references/SMELLS.md).
 
 ## Process
@@ -56,7 +56,7 @@ Ask these questions, in order, of every folder and the files inside it. Each len
 4. **Is there a repeated smell that points beyond a local rename, move, split, or merge?** Check sibling abstraction mismatch, suffix inconsistency, shotgun organization, pass-through files, fragmented pipelines, and domain or dependency smells. See [references/SMELLS.md](references/SMELLS.md).
 5. **Does one vertical trace make sense from start to end?** Pick a representative user request or job and trace it across the tree. Use the trace to find misplaced concepts, misleading folder claims, hidden policy in adapters, and persistence details leaking into places they do not belong.
 
-When smells suggest a new way of organizing the codebase, present it as an **alternative tree-shape candidate**, not as a silent expansion of scope. Escalate to an architecture-focused skill when the candidate requires new seams, changed dependency direction, domain modeling, or ADR-level decisions.
+When smells suggest a new way of organizing the codebase, present it as an **alternative tree-shape candidate**, not as a silent expansion of scope. If the candidate requires new seams, changed dependency direction, domain modeling, or ADR-level decisions, stop and flag it as architecture work for the user instead of applying it as organization-only work.
 
 ### 2. Present candidates as an HTML report
 
@@ -72,7 +72,7 @@ Each candidate must include:
 - The smell and rule lens, when a smell is the reason the candidate matters.
 - The smallest behavior-preserving change that addresses it.
 - Whether the candidate is local organization work or an alternative tree-shape exploration.
-- Whether to escalate because the candidate is really architecture work.
+- Whether to flag the candidate as architecture work rather than organization-only work.
 - Blast radius: affected imports, tests, build config, generated files, or public paths.
 - Verification: which tests, type checks, search checks, or manual inspections would prove the change stayed structural.
 
@@ -92,14 +92,6 @@ Once the user picks a candidate, walk the change with them before touching the d
 
 If during the conversation a new grouping concept emerges that doesn't exist anywhere yet, name it — and use that name consistently across files, folders, and any prose. **The naming we land on is itself an artifact** worth preserving in a code comment, ADR, or CONTEXT.md if the project has one.
 
-## Final checklist
+## Before presenting
 
-- Did the proposal reduce the facts a reader must hold to find and understand the file?
-- Does every recommended folder, file, and name make a checkable claim?
-- Did each split or merge improve cohesion, co-location, or predictiveness?
-- Did every smell-based suggestion name the rule lens and avoid treating the smell as proof by itself?
-- Are sibling files and folders at the same abstraction level, with suffixes and naming patterns used consistently?
-- Did at least one representative vertical trace support the diagnosis when the issue spans UI, application logic, persistence, or schema files?
-- Are behavior changes absent, explicitly separated, or called out as out of scope?
-- Is the blast radius counted and the verification path concrete?
-- Did the recommendation stop before speculative cleanup?
+Run the key tests once more: predictiveness, cohesion, fragmentation, boundary, behavior, smell triage, and vertical trace when the issue spans UI, application logic, persistence, or schema files. If a candidate is speculative, behavior-changing, or really architecture work, say that plainly and do not present it as an organization-only fix.

@@ -2,19 +2,19 @@
 
 Use smells as triage signals, not automatic fixes. A smell earns a candidate only when it points to failed **predictiveness**, weak **co-location**, mixed or fragmented **scope**, or a folder claim that does not match the files inside it.
 
-Ground every diagnosis in one rule lens:
+Ground every diagnosis in one local rule lens from [agent-rules-books](agent-rules-books/ATTRIBUTION.md). Read only the relevant file:
 
-- **A Philosophy of Software Design** — reduce reader complexity, reject shallow boundaries, hide knowledge where it belongs, and split or merge by total complexity.
-- **Refactoring** — keep the candidate behavior-preserving, small, reversible, and aimed at the current blocking smell.
-- **Clean Architecture** — use only when source dependencies, framework details, persistence details, or delivery mechanisms are shaping the core file tree.
-- **Domain-Driven Design Distilled** — use only when domain language, bounded contexts, aggregates, or business capabilities are the reason the current folder or file names mislead.
+- **[A Philosophy of Software Design](agent-rules-books/a-philosophy-of-software-design.mini.md)** — reduce reader complexity, reject shallow boundaries, hide knowledge where it belongs, and split or merge by total complexity.
+- **[Refactoring](agent-rules-books/refactoring.mini.md)** — keep the candidate behavior-preserving, small, reversible, and aimed at the current blocking smell.
+- **[Clean Architecture](agent-rules-books/clean-architecture.mini.md)** — use only when source dependencies, framework details, persistence details, or delivery mechanisms are shaping the core file tree.
+- **[Domain-Driven Design Distilled](agent-rules-books/domain-driven-design-distilled.mini.md)** — use only when domain language, bounded contexts, aggregates, or business capabilities are the reason the current folder or file names mislead.
 
 ## Smell triage
 
 For each smell, record:
 
 ```text
-Smell -> Rule lens -> Diagnosis -> Candidate -> Verification -> Escalate?
+Smell -> Rule lens -> Diagnosis -> Candidate -> Verification -> Architecture flag?
 ```
 
 - **Smell** — the concrete observation in the tree, names, imports, or change history.
@@ -22,7 +22,7 @@ Smell -> Rule lens -> Diagnosis -> Candidate -> Verification -> Escalate?
 - **Diagnosis** — why the smell hurts predictiveness, cohesion, co-location, or reader complexity.
 - **Candidate** — the smallest behavior-preserving rename, move, split, merge, or alternative organization to explore.
 - **Verification** — import search, type check, tests, dependency rule, or manual tree inspection.
-- **Escalate?** — yes when the fix implies new seams, dependency direction changes, domain modeling, or ADR-level architecture work.
+- **Architecture flag?** — yes when the fix implies new seams, dependency direction changes, domain modeling, or ADR-level architecture work; stop and ask the user rather than applying it as organization-only work.
 
 ## Vertical trace sanity check
 
@@ -37,8 +37,8 @@ Trace only far enough to judge organization. The goal is not full behavior analy
 Look for these trace smells:
 
 - **Concept changes names mid-flight** — the same business thing is called `lead`, `contact`, `profile`, and `userInput` across the path. Candidate: rename around one concept or identify separate bounded contexts.
-- **Layer jump surprise** — a UI file reaches directly into persistence, schema, or vendor details when an intermediate concept should own the knowledge. Candidate: surface as architecture-level if dependency direction must change.
-- **Policy hides in adapters** — business rules live in React forms, HTTP handlers, ORM mappers, or migration helpers. Candidate: flag the misplaced folder claim; escalate when moving rules changes seams.
+- **Layer jump surprise** — a UI file reaches directly into persistence, schema, or vendor details when an intermediate concept should own the knowledge. Candidate: flag as architecture work if dependency direction must change.
+- **Policy hides in adapters** — business rules live in React forms, HTTP handlers, ORM mappers, or migration helpers. Candidate: flag the misplaced folder claim; mark as architecture work when moving rules changes seams.
 - **Persistence leads the story** — migration/table names shape application names even though the user-facing concept differs. Candidate: rename application files by concept and keep storage translation at the edge.
 - **End-to-end scatter** — one request crosses many folders whose names do not explain why each hop exists. Candidate: explore a use-case or business-capability tree shape.
 - **Trace-only folder** — a folder exists because it is one step in a request sequence (`prepare/`, `process/`, `finalize/`) rather than a stable concept. Candidate: reorganize around the durable concept unless temporal order is the domain fact.
@@ -46,26 +46,26 @@ Look for these trace smells:
 Record the trace as:
 
 ```text
-Trace -> Breakpoint -> Rule lens -> Candidate -> Verification -> Escalate?
+Trace -> Breakpoint -> Rule lens -> Candidate -> Verification -> Architecture flag?
 ```
 
 Use **A Philosophy of Software Design** when the trace exposes cognitive load, hidden dependencies, shallow pass-through files, or temporal coupling. Use **Clean Architecture** when dependency direction is wrong. Use **Domain-Driven Design Distilled** when the trace exposes confused business language. Use **Refactoring** to keep any proposed change behavior-preserving and reviewable.
 
 ## Tree smells
 
-- **Sibling abstraction mismatch** — a folder mixes high-level orchestrators, low-level primitives, adapters, schemas, scripts, or tests as siblings. Candidate: split by concept, layer, or role only when the new folders make checkable claims. Escalate if this exposes dependency-direction problems.
+- **Sibling abstraction mismatch** — files or folders at one level are not peers: high-level orchestration, low-level primitives, adapters, schemas, generated code, and tests sit side by side without a shared folder claim. Candidate: split by concept, layer, or role only when the new folders make checkable claims. Mark as architecture work if this exposes dependency-direction problems.
 - **Incoherent sibling set** — most sibling folders are business concepts but one is `utils/`, `common/`, `services/`, or another catch-all. Candidate: decompose the catch-all by real concepts or move files to existing concept folders.
 - **Type bucket gravity** — `types/`, `interfaces/`, `constants/`, `classes/`, or `models/` attracts files that belong with behavior. Candidate: move types or constants next to the files whose scope they describe, unless the bucket is a public or generated surface.
 - **Path friction** — many files reach across the tree with long relative imports. Candidate: check whether the folder claim is wrong before adding aliases.
-- **Tree reveals framework before domain** — a business-heavy area is organized first by `controllers/`, `services/`, `repositories/`, or framework folders. Candidate: explore use-case, capability, or bounded-context folders. Escalate if dependency direction or domain ownership would change.
+- **Tree reveals framework before domain** — a business-heavy area is organized first by `controllers/`, `services/`, `repositories/`, or framework folders. Candidate: explore use-case, capability, or bounded-context folders. Mark as architecture work if dependency direction or domain ownership would change.
 
 ## Naming smells
 
 - **Suffix inconsistency** — sibling files share a suffix but do different work, e.g. `*-handler` means HTTP endpoint in one file, event consumer in another, and business operation in a third. Candidate: rename by actual scope or split roles into separate folders.
 - **Suffix collision** — sibling files use different suffixes for the same role, e.g. `*-handler`, `*-controller`, and `*-processor` all mean delivery adapter. Candidate: standardize the name pattern if the scopes are truly equivalent.
-- **Mechanism-first names** — names expose storage, transport, framework, or vendor details when callers need the concept instead. Candidate: rename by role or concept; escalate only if the mechanism has leaked into core policy.
+- **Mechanism-first names** — names expose storage, transport, framework, or vendor details when callers need the concept instead. Candidate: rename by role or concept; mark as architecture work only if the mechanism has leaked into core policy.
 - **Near-duplicate names** — files differ only by weak adjectives like `new`, `old`, `shared`, `base`, `common`, `helper`, or `manager`. Candidate: identify the real distinction or merge fragmented scope.
-- **Domain concept hiding behind role name** — a file named `service`, `handler`, `processor`, or `manager` owns business language. Candidate: rename to the domain concept or use case; escalate when the domain model is fuzzy.
+- **Domain concept hiding behind role name** — a file named `service`, `handler`, `processor`, or `manager` owns business language. Candidate: rename to the domain concept or use case; mark as architecture work when the domain model is fuzzy.
 
 ## Change-history smells
 
@@ -79,7 +79,7 @@ Use **A Philosophy of Software Design** when the trace exposes cognitive load, h
 - **Pass-through file** — a file exists mostly to forward calls, re-export names, or wrap another file without hiding knowledge. Candidate: inline, rename, or move the boundary to where it hides real complexity.
 - **Fragmented pipeline** — `parse-*`, `validate-*`, `normalize-*`, and `save-*` files force a reader through several tiny files for one concern. Candidate: merge when the stages are not stable concepts on their own.
 - **Exposed ordering** — file names or folder layout encode `prepare/process/finalize` when the stable concept is something else. Candidate: reorganize around the concept unless temporal ordering is the real domain fact.
-- **Core imports details** — concept folders import framework requests, ORM rows, vendor SDKs, transport types, or persistence details. Candidate: flag as architecture-level; use organization only to reveal the dependency problem.
+- **Core imports details** — concept folders import framework requests, ORM rows, vendor SDKs, transport types, or persistence details. Candidate: flag as architecture work; use organization only to reveal the dependency problem.
 
 ## Alternative organization candidates
 

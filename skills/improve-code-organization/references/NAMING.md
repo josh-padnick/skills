@@ -16,8 +16,8 @@ A name is a **promise**. The whole file should be derivable from its name; the f
 - **Abbreviation-y** — `usr_mgr.ts`. Save a few characters, lose tab-completion and grepability.
 - **Plural without reason** — `users.ts` for a single function `getUser`. Plural suggests a collection; use it when there is one.
 - **Suffix soup** — `userServiceHelperFactoryImpl.ts`. Each suffix was added to disambiguate from the last layer of suffixes. The pattern is the problem, not the latest suffix.
-- **Suffix inconsistency** — sibling files share a suffix but the suffix means different work. If `*-handler` means endpoint, event consumer, and business operation in the same folder, the suffix no longer predicts scope.
-- **Suffix collision** — sibling files use different suffixes for the same role. If `*-handler`, `*-controller`, and `*-processor` all mean delivery adapter, the naming pattern is hiding sameness.
+
+For suffix inconsistency, suffix collision, and near-duplicate names, use the catalog in [SMELLS.md](SMELLS.md#naming-smells).
 
 ## Tests to apply
 

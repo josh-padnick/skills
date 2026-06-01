@@ -11,11 +11,11 @@ A folder name is rarely bad in isolation — it's bad when it gives no useful pr
 - **Unbounded generic names** — `utils/`, `helpers/`, `lib/`, `common/`, `shared/`, `misc/`, `core/`. A smell when they grow without scope: anything can land there, and nothing can violate the name. A small, scoped `utils/` for genuinely cross-cutting helpers (e.g. string formatting) can be fine — the smell is gravity, not the letters.
 - **Type-based folders without a reason** — `interfaces/`, `types/`, `classes/`, `constants/`, `enums/`. A smell when types are scattered into them away from the behaviour they describe. Legitimate when types are themselves the public surface (generated types, schema definitions, a published type package).
 - **Tech-stack folders inconsistent with the project shape** — `controllers/`, `models/`, `views/` mixed into an otherwise feature-organized codebase. The smell is the inconsistency, not the names; an MVC app where `controllers/` is the dominant shape is fine.
-- **Sibling abstraction mismatch** — one folder contains high-level orchestration files, low-level primitives, adapters, schemas, generated code, and tests as siblings. The smell is not variety; it is that the folder no longer reads at one abstraction level.
 - **Empty-ish folders** — three files in a folder named for what *might* go there someday. Speculative groupings.
-- **Cousin folders that always change together** — `order/` and `pricing/` whose files appear in every commit together. Possibly one concept that's been split prematurely — but check whether the co-change is a refactor artefact before merging.
 - **One folder so large that scanning stops working** — a flat folder where you can no longer skim and find what you want. There's no universal file count; generated code, routes, fixtures, assets, and data folders can be large and still coherent. The signal is that *the reader's scan fails*, not the size on its own.
 - **Folder name doesn't match its files' names.** A folder called `billing/` containing `invoice.ts`, `subscription.ts`, `payment.ts` is plausibly fine — though in some domains those are three distinct bounded contexts that shouldn't share a folder. A folder called `billing/` containing `email-sender.ts`, `csv-export.ts`, `feature-flags.ts` is a lie: the name predicts nothing about the contents.
+
+For sibling abstraction mismatch, path friction, cousin folders that always change together, and other cross-cutting smells, use the catalog in [SMELLS.md](SMELLS.md#tree-smells).
 
 ## Allowed exceptions
 

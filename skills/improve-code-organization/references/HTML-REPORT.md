@@ -46,7 +46,7 @@ The organization review is rendered as a single self-contained HTML file in the 
 
 ## Header
 
-Repo name, date, and a compact legend: amber = rename, blue = move, emerald = new file, red strikethrough = removed file. Also include a blast-radius legend: `Small` = ≤5 affected references, `Medium` = 5–25, `Large` = 25+. No introduction paragraph — straight into the candidates.
+Repo name, date, and a compact legend: amber = rename, blue = move, emerald = new file, red strikethrough = removed file. Also include a blast-radius legend: `Small` = ≤5 affected references, `Medium` = 6–25, `Large` = 26+. No introduction paragraph — straight into the candidates.
 
 ## Candidate card
 
@@ -56,7 +56,7 @@ Each candidate is one `<article>`:
 
 - **Title** — short, names the change (e.g. "Split `auth.ts` into session and permissions").
 - **Badge row** — three badges:
-  - **Pillar**: `folders` (teal), `naming` (indigo), `scoping` (violet).
+  - **Lens**: `folders` (teal), `naming` (indigo), `scoping` (violet), `smell` (rose), or `trace` (cyan). Use `smell` when the candidate comes directly from smell triage and does not map cleanly to folders, naming, or scoping; use `trace` when the vertical trace is the main evidence.
   - **Recommendation strength**: `Strong` = emerald, `Worth exploring` = amber, `Speculative` = slate.
   - **Blast radius**: spell out `Small`, `Medium`, or `Large`; include the count when known, e.g. `Blast radius: Small (3 refs)`. Do not use unexplained `S`, `M`, or `L` letters.
 - **Smell / lens** — one compact line when the candidate comes from [SMELLS.md](SMELLS.md), e.g. `suffix inconsistency · APoSD + Refactoring`.
@@ -66,7 +66,7 @@ Each candidate is one `<article>`:
 - **Change** — one sentence. What moves, splits, merges, or is renamed.
 - **Wins** — bullets, ≤6 words each. e.g. "Predictive name", "Cohesion: one concern per file", "Co-locates files that co-change".
 - **Verification** — one terse line naming the checks that keep the change structural.
-- **Escalation** — include only when the candidate should move to architecture work rather than organization-only work.
+- **Architecture flag** — include only when the candidate is architecture work rather than organization-only work.
 
 No paragraphs of explanation. If the tree needs a paragraph, redraw the tree.
 
