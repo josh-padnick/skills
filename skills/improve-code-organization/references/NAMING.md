@@ -25,7 +25,7 @@ For suffix inconsistency, suffix collision, and near-duplicate names, use the ca
 - **Search test.** If you wanted to add a new function to do X, would you search for the file by guessing a name? Try it. Did you land where it actually lives?
 - **Inverse test.** Pick a function inside the file. From the function alone, would you guess this file name? If no, either the function is in the wrong file or the file is named wrong.
 - **Drift test.** Compare the name against the current contents — not what the file held when it was created. Drift is the most common naming failure and the hardest to see from inside.
-- **Pattern test.** Group sibling files by prefix and suffix. Does the same suffix predict the same scope? Do different suffixes distinguish real scope differences? If no, rename by actual scope or split roles into folders.
+- **Naming pattern test.** First identify the folder's sibling grouping strategy (see [FOLDERS.md](FOLDERS.md#tests-to-apply)). If the strategy uses prefixes, suffixes, or paired names, do those patterns predict the same scope consistently? If the strategy is concept-based, do the sibling names read as peer concepts without relying on suffixes? If no, rename by actual scope or split roles into folders.
 
 ## What good names do
 

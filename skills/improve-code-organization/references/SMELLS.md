@@ -55,6 +55,7 @@ Use **A Philosophy of Software Design** when the trace exposes cognitive load, h
 
 ## Tree smells
 
+- **Unclear sibling strategy** — a folder's immediate children do not reveal whether they are grouped by concept, use case, layer, adapter role, lifecycle phase, framework convention, or another explicit strategy. Candidate: choose the strategy that best matches co-change and predictiveness, then rename or regroup the children to make it visible.
 - **Sibling abstraction mismatch** — files or folders at one level are not peers: high-level orchestration, low-level primitives, adapters, schemas, generated code, and tests sit side by side without a shared folder claim. Candidate: split by concept, layer, or role only when the new folders make checkable claims. Mark as architecture work if this exposes dependency-direction problems.
 - **Incoherent sibling set** — most sibling folders are business concepts but one is `utils/`, `common/`, `services/`, or another catch-all. Candidate: decompose the catch-all by real concepts or move files to existing concept folders.
 - **Type bucket gravity** — `types/`, `interfaces/`, `constants/`, `classes/`, or `models/` attracts files that belong with behavior. Candidate: move types or constants next to the files whose scope they describe, unless the bucket is a public or generated surface.
