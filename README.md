@@ -15,6 +15,7 @@ skills/
       FOLDERS.md
       NAMING.md
       SCOPING.md
+      SMELLS.md
       HTML-REPORT.md
 ```
 

@@ -1,6 +1,6 @@
 ---
 name: improve-code-organization
-description: Find folder-structure, naming, and scoping problems in a codebase, then propose behavior-preserving rename, move, split, or merge candidates that make the file tree navigable on its own. Use when the user wants to restructure folders, rename files, tighten what lives in each file, reduce organization friction, or make a codebase legible at a glance.
+description: Find folder-structure, naming, scoping, and organization-smell problems in a codebase, then propose behavior-preserving rename, move, split, merge, or alternative tree-shape candidates that make the file tree navigable on its own. Use when the user wants to restructure folders, rename files, tighten what lives in each file, investigate code organization smells, reduce organization friction, or make a codebase legible at a glance.
 ---
 
 # Improve Code Organization
@@ -13,6 +13,7 @@ Use one primary decision pressure: **reduce reader complexity by increasing pred
 
 Secondary guardrails:
 
+- Ground each diagnosis in one rule lens from `ciembor/agent-rules-books`: **A Philosophy of Software Design** by default, **Refactoring** for safety, and **Clean Architecture** or **Domain-Driven Design Distilled** only when dependency direction or domain boundaries are the real issue.
 - Treat organization work as **behavior-preserving refactoring** unless the user explicitly asks for behavior changes.
 - Prefer project-specific concepts over type buckets, roles, or implementation mechanisms.
 - Split or merge by total reader burden, not by file size, habit, or "one thing per file" slogans.
@@ -38,6 +39,7 @@ Key tests:
 - **Fragmentation test** — would merging these N files produce one coherent file? If yes, they were fragmented.
 - **Boundary test** — does this new file or folder boundary remove more reader complexity than it introduces? If no, don't create it.
 - **Behavior test** — can this organization change be reviewed without reasoning about changed behavior? If no, split the behavior change from the rename, move, split, or merge.
+- **Smell triage** — record `Smell -> Rule lens -> Diagnosis -> Candidate -> Verification -> Escalate?`. See [references/SMELLS.md](references/SMELLS.md).
 
 ## Process
 
@@ -45,11 +47,14 @@ Key tests:
 
 Use a dedicated exploration pass to walk the codebase **top-down**: folder structure first, then per-file naming, then file-internal scope. If the agent supports exploration subagents, use one; otherwise inspect the tree directly. Outer decisions frame inner ones — a file named `rules.ts` is fine inside `pricing/` and useless inside `utils/`, so settle the folder before re-judging the name. Expect to iterate: a folder problem often surfaces *through* naming friction (a folder full of files that can't be coherently named is the diagnostic for a bad folder), in which case go back up a level.
 
-Ask these three questions, in order, of every folder and the files inside it. Each lens's symptoms, tests, and mechanics live in its own file:
+Ask these questions, in order, of every folder and the files inside it. Each lens's symptoms, tests, and mechanics live in its own file:
 
 1. **Does the folder predict its contents, and are its files at the same level of abstraction?** Folders should make a checkable claim; sibling abstractions belong as sibling folders. Look for generic folders without a bounded convention, type-based folders without reason, mismatched contents, oversized folders, and path friction (`../../../` import chains often signal a folder that's wrong, not a path that's wrong). See [references/FOLDERS.md](references/FOLDERS.md).
 2. **Does each file's name fit its contents?** The name should predict what's inside; the contents should deliver what the name promises. Look for **drifted** names (file grew past its name), **generic** names (could hold anything), and over- or under-promising names — see [references/NAMING.md](references/NAMING.md).
 3. **Should this file be split, or should these files be combined?** A file holding two unrelated concerns has **mixed scope** and should split. A single concern spread thin across many tiny files is **fragmented** and should combine. See [references/SCOPING.md](references/SCOPING.md).
+4. **Is there a repeated smell that points beyond a local rename, move, split, or merge?** Check sibling abstraction mismatch, suffix inconsistency, shotgun organization, pass-through files, fragmented pipelines, and domain or dependency smells. See [references/SMELLS.md](references/SMELLS.md).
+
+When smells suggest a new way of organizing the codebase, present it as an **alternative tree-shape candidate**, not as a silent expansion of scope. Escalate to an architecture-focused skill when the candidate requires new seams, changed dependency direction, domain modeling, or ADR-level decisions.
 
 ### 2. Present candidates as an HTML report
 
@@ -62,7 +67,10 @@ See [references/HTML-REPORT.md](references/HTML-REPORT.md) for the full scaffold
 Each candidate must include:
 
 - The specific friction: failed predictiveness, mixed scope, fragmented scope, weak co-location, or incoherent folder claim.
+- The smell and rule lens, when a smell is the reason the candidate matters.
 - The smallest behavior-preserving change that addresses it.
+- Whether the candidate is local organization work or an alternative tree-shape exploration.
+- Whether to escalate because the candidate is really architecture work.
 - Blast radius: affected imports, tests, build config, generated files, or public paths.
 - Verification: which tests, type checks, search checks, or manual inspections would prove the change stayed structural.
 
@@ -87,6 +95,8 @@ If during the conversation a new grouping concept emerges that doesn't exist any
 - Did the proposal reduce the facts a reader must hold to find and understand the file?
 - Does every recommended folder, file, and name make a checkable claim?
 - Did each split or merge improve cohesion, co-location, or predictiveness?
+- Did every smell-based suggestion name the rule lens and avoid treating the smell as proof by itself?
+- Are sibling files and folders at the same abstraction level, with suffixes and naming patterns used consistently?
 - Are behavior changes absent, explicitly separated, or called out as out of scope?
 - Is the blast radius counted and the verification path concrete?
 - Did the recommendation stop before speculative cleanup?

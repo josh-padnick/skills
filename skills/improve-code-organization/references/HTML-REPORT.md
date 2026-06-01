@@ -59,11 +59,13 @@ Each candidate is one `<article>`:
   - **Pillar**: `folders` (teal), `naming` (indigo), `scoping` (violet).
   - **Recommendation strength**: `Strong` = emerald, `Worth exploring` = amber, `Speculative` = slate.
   - **Blast radius**: `S` (≤5 imports), `M` (5–25), `L` (25+), rendered as a small monospaced tag.
+- **Smell / lens** — one compact line when the candidate comes from [SMELLS.md](SMELLS.md), e.g. `suffix inconsistency · APoSD + Refactoring`.
 - **Before / After file tree** — the centrepiece. Two columns, side by side. See patterns below.
 - **Problem** — one sentence. What hurts.
 - **Change** — one sentence. What moves, splits, merges, or is renamed.
 - **Wins** — bullets, ≤6 words each. e.g. "Predictive name", "Cohesion: one concern per file", "Co-locates files that co-change".
 - **Verification** — one terse line naming the checks that keep the change structural.
+- **Escalation** — include only when the candidate should move to architecture work rather than organization-only work.
 
 No paragraphs of explanation. If the tree needs a paragraph, redraw the tree.
 

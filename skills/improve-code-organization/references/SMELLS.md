@@ -1,0 +1,67 @@
+# Organization Smells
+
+Use smells as triage signals, not automatic fixes. A smell earns a candidate only when it points to failed **predictiveness**, weak **co-location**, mixed or fragmented **scope**, or a folder claim that does not match the files inside it.
+
+Ground every diagnosis in one rule lens:
+
+- **A Philosophy of Software Design** — reduce reader complexity, reject shallow boundaries, hide knowledge where it belongs, and split or merge by total complexity.
+- **Refactoring** — keep the candidate behavior-preserving, small, reversible, and aimed at the current blocking smell.
+- **Clean Architecture** — use only when source dependencies, framework details, persistence details, or delivery mechanisms are shaping the core file tree.
+- **Domain-Driven Design Distilled** — use only when domain language, bounded contexts, aggregates, or business capabilities are the reason the current folder or file names mislead.
+
+## Smell triage
+
+For each smell, record:
+
+```text
+Smell -> Rule lens -> Diagnosis -> Candidate -> Verification -> Escalate?
+```
+
+- **Smell** — the concrete observation in the tree, names, imports, or change history.
+- **Rule lens** — which rule set makes this smell matter.
+- **Diagnosis** — why the smell hurts predictiveness, cohesion, co-location, or reader complexity.
+- **Candidate** — the smallest behavior-preserving rename, move, split, merge, or alternative organization to explore.
+- **Verification** — import search, type check, tests, dependency rule, or manual tree inspection.
+- **Escalate?** — yes when the fix implies new seams, dependency direction changes, domain modeling, or ADR-level architecture work.
+
+## Tree smells
+
+- **Sibling abstraction mismatch** — a folder mixes high-level orchestrators, low-level primitives, adapters, schemas, scripts, or tests as siblings. Candidate: split by concept, layer, or role only when the new folders make checkable claims. Escalate if this exposes dependency-direction problems.
+- **Incoherent sibling set** — most sibling folders are business concepts but one is `utils/`, `common/`, `services/`, or another catch-all. Candidate: decompose the catch-all by real concepts or move files to existing concept folders.
+- **Type bucket gravity** — `types/`, `interfaces/`, `constants/`, `classes/`, or `models/` attracts files that belong with behavior. Candidate: move types or constants next to the files whose scope they describe, unless the bucket is a public or generated surface.
+- **Path friction** — many files reach across the tree with long relative imports. Candidate: check whether the folder claim is wrong before adding aliases.
+- **Tree reveals framework before domain** — a business-heavy area is organized first by `controllers/`, `services/`, `repositories/`, or framework folders. Candidate: explore use-case, capability, or bounded-context folders. Escalate if dependency direction or domain ownership would change.
+
+## Naming smells
+
+- **Suffix inconsistency** — sibling files share a suffix but do different work, e.g. `*-handler` means HTTP endpoint in one file, event consumer in another, and business operation in a third. Candidate: rename by actual scope or split roles into separate folders.
+- **Suffix collision** — sibling files use different suffixes for the same role, e.g. `*-handler`, `*-controller`, and `*-processor` all mean delivery adapter. Candidate: standardize the name pattern if the scopes are truly equivalent.
+- **Mechanism-first names** — names expose storage, transport, framework, or vendor details when callers need the concept instead. Candidate: rename by role or concept; escalate only if the mechanism has leaked into core policy.
+- **Near-duplicate names** — files differ only by weak adjectives like `new`, `old`, `shared`, `base`, `common`, `helper`, or `manager`. Candidate: identify the real distinction or merge fragmented scope.
+- **Domain concept hiding behind role name** — a file named `service`, `handler`, `processor`, or `manager` owns business language. Candidate: rename to the domain concept or use case; escalate when the domain model is fuzzy.
+
+## Change-history smells
+
+- **Shotgun organization** — one conceptual change touches many unrelated folders. Candidate: co-locate the files that change together or introduce a concept folder that owns the knowledge.
+- **Divergent folder** — one folder changes for several unrelated reasons. Candidate: split by the reasons to change, but only when each new folder has a predictive name.
+- **Always-together files** — files in separate folders repeatedly change in the same commits. Candidate: merge or co-locate if they form one concern. Treat broad refactors and mechanical formatting commits as noise.
+- **Always-separate halves** — one file's top and bottom halves change independently. Candidate: split mixed scope along the real concerns.
+
+## Boundary smells
+
+- **Pass-through file** — a file exists mostly to forward calls, re-export names, or wrap another file without hiding knowledge. Candidate: inline, rename, or move the boundary to where it hides real complexity.
+- **Fragmented pipeline** — `parse-*`, `validate-*`, `normalize-*`, and `save-*` files force a reader through several tiny files for one concern. Candidate: merge when the stages are not stable concepts on their own.
+- **Exposed ordering** — file names or folder layout encode `prepare/process/finalize` when the stable concept is something else. Candidate: reorganize around the concept unless temporal ordering is the real domain fact.
+- **Core imports details** — concept folders import framework requests, ORM rows, vendor SDKs, transport types, or persistence details. Candidate: flag as architecture-level; use organization only to reveal the dependency problem.
+
+## Alternative organization candidates
+
+Consider a new tree shape only when local rename, move, split, or merge candidates cannot explain the smell.
+
+- **By business capability** — when changes cluster around durable capabilities such as billing, intake, pricing, or fulfillment.
+- **By use case** — when application actions are the stable unit and framework folders hide intent.
+- **By bounded context** — when the same word means different things in different areas, or domain concepts should not share one folder.
+- **By edge adapter around a core** — when delivery, persistence, or vendor details surround business rules and dependency direction matters.
+- **By generated/public surface** — when schema, proto, generated, or published type folders are legitimate external surfaces.
+
+Do not recommend a new tree shape because it looks cleaner. Recommend it only when it lowers cognitive load, improves co-location, restores a checkable folder claim, or makes an existing architecture decision visible in the file tree.
