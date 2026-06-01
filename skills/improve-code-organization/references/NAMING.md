@@ -17,12 +17,15 @@ A name is a **promise**. The whole file should be derivable from its name; the f
 - **Plural without reason** — `users.ts` for a single function `getUser`. Plural suggests a collection; use it when there is one.
 - **Suffix soup** — `userServiceHelperFactoryImpl.ts`. Each suffix was added to disambiguate from the last layer of suffixes. The pattern is the problem, not the latest suffix.
 
+For suffix inconsistency, suffix collision, and near-duplicate names, use the catalog in [SMELLS.md](SMELLS.md#naming-smells).
+
 ## Tests to apply
 
 - **Stranger test.** If a developer who has never seen the codebase reads only the file name, what do they expect to find inside? Open the file. How wide is the gap?
 - **Search test.** If you wanted to add a new function to do X, would you search for the file by guessing a name? Try it. Did you land where it actually lives?
 - **Inverse test.** Pick a function inside the file. From the function alone, would you guess this file name? If no, either the function is in the wrong file or the file is named wrong.
 - **Drift test.** Compare the name against the current contents — not what the file held when it was created. Drift is the most common naming failure and the hardest to see from inside.
+- **Naming pattern test.** First identify the folder's sibling grouping strategy (see [FOLDERS.md](FOLDERS.md#tests-to-apply)). If the strategy uses prefixes, suffixes, or paired names, do those patterns predict the same scope consistently? If the strategy is concept-based, do the sibling names read as peer concepts without relying on suffixes? If no, rename by actual scope or split roles into folders.
 
 ## What good names do
 
@@ -30,6 +33,7 @@ A name is a **promise**. The whole file should be derivable from its name; the f
 - **Match the domain language.** If `CONTEXT.md` (or the team's conversation) calls the concept "intake," name the file `order-intake.ts`, not `order-receiver.ts` or `order-handler.ts`.
 - **Match the right level of specificity.** `auth.ts` for a small project's whole auth surface is fine; `auth.ts` for a 500-line file in a system with 12 auth concerns is too generic.
 - **Read as a noun phrase or a clear verb.** `csv-row-parser`, `cancel-subscription`, `pricing-rules` — each is a phrase a reader can hold in their head.
+- **Use suffixes as contracts.** A suffix is only useful when it predicts role consistently in that folder or project. If it cannot do that, prefer concept names over role suffixes.
 
 ## When to fix the name vs. fix the scope
 

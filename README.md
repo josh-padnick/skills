@@ -15,12 +15,19 @@ skills/
       FOLDERS.md
       NAMING.md
       SCOPING.md
+      SMELLS.md
+      agent-rules-books/
+        ATTRIBUTION.md
+        LICENSE
+        *.mini.md
       HTML-REPORT.md
 ```
 
 `SKILL.md` is the entry point. Its YAML frontmatter must include `name` and `description`, and the `name` should match the folder name.
 
 Keep detailed supporting material in `references/` and link to it from `SKILL.md`. That keeps the always-loaded skill metadata small while still making deeper instructions available when the skill is invoked.
+
+Third-party rule references should be vendored under the skill that uses them unless `scripts/link-local-skills.sh` grows explicit support for shared installed resources. Include attribution and license files with any vendored material.
 
 ## Local setup
 

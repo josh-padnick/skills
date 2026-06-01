@@ -2,6 +2,16 @@
 
 The organization review is rendered as a single self-contained HTML file in the OS temp directory. Tailwind and Mermaid both come from CDNs. The centrepiece of every candidate card is a **before/after file tree** — show the actual paths so the reader can see exactly what moves, splits, merges, or renames.
 
+## Contents
+
+- [Scaffold](#scaffold)
+- [Header](#header)
+- [Candidate card](#candidate-card)
+- [Before / After tree patterns](#before--after-tree-patterns)
+- [Style guidance](#style-guidance)
+- [Top recommendation section](#top-recommendation-section)
+- [Tone](#tone)
+
 ## Scaffold
 
 ```html
@@ -36,7 +46,7 @@ The organization review is rendered as a single self-contained HTML file in the 
 
 ## Header
 
-Repo name, date, and a compact legend: amber = rename, blue = move, emerald = new file, red strikethrough = removed file. No introduction paragraph — straight into the candidates.
+Repo name, date, and a compact legend: amber = rename, blue = move, emerald = new file, red strikethrough = removed file. Also include a blast-radius legend: `Small` = ≤5 affected references, `Medium` = 6–25, `Large` = 26+. Include a compact source note naming the vendored `agent-rules-books` rule summaries; if the report includes links, use source URLs or absolute local paths, not temp-relative links. No introduction paragraph — straight into the candidates.
 
 ## Candidate card
 
@@ -46,13 +56,18 @@ Each candidate is one `<article>`:
 
 - **Title** — short, names the change (e.g. "Split `auth.ts` into session and permissions").
 - **Badge row** — three badges:
-  - **Pillar**: `folders` (teal), `naming` (indigo), `scoping` (violet).
+  - **Lens**: `folders` (teal), `naming` (indigo), `scoping` (violet), `smell` (rose), or `trace` (cyan). Use `smell` when the candidate comes directly from smell triage and does not map cleanly to folders, naming, or scoping; use `trace` when the vertical trace is the main evidence.
   - **Recommendation strength**: `Strong` = emerald, `Worth exploring` = amber, `Speculative` = slate.
-  - **Blast radius**: `S` (≤5 imports), `M` (5–25), `L` (25+), rendered as a small monospaced tag.
+  - **Blast radius**: spell out `Small`, `Medium`, or `Large`; include the count when known, e.g. `Blast radius: Small (3 refs)`. Do not use unexplained `S`, `M`, or `L` letters.
+- **Rule basis** — required. Cite the rule lens or lenses and why they apply. Keep it compact, e.g. `APoSD: boundary must hide complexity · Refactoring: behavior-preserving small step`. Use architecture-oriented lenses (`Clean Architecture`, `DDD Distilled`, `Pragmatic Programmer`) only when they are actually doing diagnostic work.
+- **Smell** — include when the candidate comes from [SMELLS.md](SMELLS.md), e.g. `suffix inconsistency`.
+- **Trace** — include only when a vertical trace exposed the candidate, e.g. `signup form -> server action -> user profile write -> migration`.
 - **Before / After file tree** — the centrepiece. Two columns, side by side. See patterns below.
 - **Problem** — one sentence. What hurts.
 - **Change** — one sentence. What moves, splits, merges, or is renamed.
 - **Wins** — bullets, ≤6 words each. e.g. "Predictive name", "Cohesion: one concern per file", "Co-locates files that co-change".
+- **Verification** — one terse line naming the checks that keep the change structural.
+- **Architecture flag** — include only when the candidate is architecture work rather than organization-only work.
 
 No paragraphs of explanation. If the tree needs a paragraph, redraw the tree.
 
@@ -127,7 +142,7 @@ A small grid of file × file cells, shaded by how often they appear in the same 
 
 ## Top recommendation section
 
-One larger card. Candidate name, one sentence on why, anchor link to its card. That's it.
+One larger card. Candidate name, one sentence on why, anchor link to its card, rule basis, and the verification line. That's it.
 
 ## Tone
 

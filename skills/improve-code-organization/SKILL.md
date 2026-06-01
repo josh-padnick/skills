@@ -1,11 +1,24 @@
 ---
 name: improve-code-organization
-description: Find folder-structure, naming, and scoping problems in a codebase, and propose changes that make the file tree navigable on its own. Use when the user wants to restructure folders, rename files, tighten what lives in each file, or make a codebase legible at a glance.
+description: Find folder-structure, naming, scoping, and organization-smell problems in a codebase, then propose behavior-preserving rename, move, split, merge, or alternative tree-shape candidates that make the file tree navigable on its own. Use when the user wants to restructure folders, rename files, tighten what lives in each file, investigate code organization smells, reduce organization friction, or make a codebase legible at a glance.
 ---
 
 # Improve Code Organization
 
-Surface organization friction and propose changes that make the **directory listing itself documentation** — so a reader who has never seen the codebase can guess where a thing lives, open the file they expect, and find what its name promised. Three lenses, applied outer-to-inner: **folders**, then **naming**, then **scoping**.
+Surface organization friction and propose changes that make the **file tree itself documentation** — so a reader who has never seen the codebase can guess where a thing lives, open the file they expect, and find what its name promised. Apply three lenses outer-to-inner: **folders**, then **naming**, then **scoping**. Layer two cross-cutting sanity checks over them: **smell triage** and **vertical trace**.
+
+## Operating bias
+
+Use one primary decision pressure: **reduce reader complexity by increasing predictiveness**. The best change is not the largest cleanup; it is the smallest rename, move, split, or merge that lets a stranger predict the right file from the folder tree and predict the file's scope from its name.
+
+Secondary guardrails:
+
+- Ground each diagnosis in one local rule lens from [references/agent-rules-books](references/agent-rules-books/ATTRIBUTION.md): **A Philosophy of Software Design** by default, **Refactoring** for safety, **Refactoring.Guru** for smell treatment, **The Pragmatic Programmer** for duplicated knowledge or vertical traces, and **Clean Architecture** or **Domain-Driven Design Distilled** only when dependency direction or domain boundaries are the real issue.
+- Treat organization work as **behavior-preserving refactoring** unless the user explicitly asks for behavior changes.
+- Prefer project-specific concepts over type buckets, roles, or implementation mechanisms.
+- Split or merge by total reader burden, not by file size, habit, or "one thing per file" slogans.
+- Every new folder or file boundary must hide more complexity than it adds.
+- Stop before speculative architecture. If the next change would not improve predictiveness, cohesion, or co-location for the current task, leave it as a note.
 
 ## Glossary
 
@@ -24,6 +37,10 @@ Key tests:
 - **Predictiveness test** — predict scope from name; predict file from folder. If no, the name or folder is wrong.
 - **Cohesion test** — would splitting this file produce two distinct concerns? If yes, scope is mixed.
 - **Fragmentation test** — would merging these N files produce one coherent file? If yes, they were fragmented.
+- **Boundary test** — does this new file or folder boundary remove more reader complexity than it introduces? If no, don't create it.
+- **Behavior test** — can this organization change be reviewed without reasoning about changed behavior? If no, split the behavior change from the rename, move, split, or merge.
+- **Smell triage** — record `Smell -> Rule lens -> Diagnosis -> Candidate -> Verification -> Architecture flag?`. See [references/SMELLS.md](references/SMELLS.md).
+- **Vertical trace test** — follow one representative request from start to end, such as React form to handler to validation to persistence to migration. If the path tells an incoherent story, diagnose the folder and name claims that broke the trace. See [references/SMELLS.md](references/SMELLS.md).
 
 ## Process
 
@@ -31,11 +48,15 @@ Key tests:
 
 Use a dedicated exploration pass to walk the codebase **top-down**: folder structure first, then per-file naming, then file-internal scope. If the agent supports exploration subagents, use one; otherwise inspect the tree directly. Outer decisions frame inner ones — a file named `rules.ts` is fine inside `pricing/` and useless inside `utils/`, so settle the folder before re-judging the name. Expect to iterate: a folder problem often surfaces *through* naming friction (a folder full of files that can't be coherently named is the diagnostic for a bad folder), in which case go back up a level.
 
-Ask these three questions, in order, of every folder and the files inside it. Each lens's symptoms, tests, and mechanics live in its own file:
+Ask these questions, in order, of every folder and the files inside it. Each lens's symptoms, tests, and mechanics live in its own file:
 
-1. **Does the folder predict its contents, and are its files at the same level of abstraction?** Folders should make a checkable claim; sibling abstractions belong as sibling folders. Look for generic folders without a bounded convention, type-based folders without reason, mismatched contents, oversized folders, and path friction (`../../../` import chains often signal a folder that's wrong, not a path that's wrong). See [references/FOLDERS.md](references/FOLDERS.md).
+1. **Does the folder predict its contents, and do its siblings follow one clear grouping strategy?** Folders should make a checkable claim; sibling files and folders should be grouped by an explicit strategy such as concept, use case, adapter role, lifecycle phase, or framework convention. Look for generic folders without a bounded convention, type-based folders without reason, mismatched contents, oversized folders, and path friction (`../../../` import chains often signal a folder that's wrong, not a path that's wrong). See [references/FOLDERS.md](references/FOLDERS.md).
 2. **Does each file's name fit its contents?** The name should predict what's inside; the contents should deliver what the name promises. Look for **drifted** names (file grew past its name), **generic** names (could hold anything), and over- or under-promising names — see [references/NAMING.md](references/NAMING.md).
 3. **Should this file be split, or should these files be combined?** A file holding two unrelated concerns has **mixed scope** and should split. A single concern spread thin across many tiny files is **fragmented** and should combine. See [references/SCOPING.md](references/SCOPING.md).
+4. **Is there a repeated smell that points beyond a local rename, move, split, or merge?** Check sibling abstraction mismatch, suffix inconsistency, shotgun organization, pass-through files, fragmented pipelines, and domain or dependency smells. See [references/SMELLS.md](references/SMELLS.md).
+5. **Does one vertical trace make sense from start to end?** Pick a representative user request or job and trace it across the tree. Use the trace to find misplaced concepts, misleading folder claims, hidden policy in adapters, and persistence details leaking into places they do not belong.
+
+When smells suggest a new way of organizing the codebase, present it as an **alternative tree-shape candidate**, not as a silent expansion of scope. If the candidate requires new seams, changed dependency direction, domain modeling, or ADR-level decisions, stop and flag it as architecture work for the user instead of applying it as organization-only work.
 
 ### 2. Present candidates as an HTML report
 
@@ -44,6 +65,17 @@ Write a self-contained HTML file to the OS temp directory so nothing lands in th
 Each candidate is rendered as a card with a **before/after file tree** as the centrepiece. End with a **Top recommendation** section.
 
 See [references/HTML-REPORT.md](references/HTML-REPORT.md) for the full scaffold, card structure, badge taxonomy, and styling guidance.
+
+Each candidate must include:
+
+- The specific friction: failed predictiveness, mixed scope, fragmented scope, weak co-location, or incoherent folder claim.
+- The rule basis: which local [agent-rules-books](references/agent-rules-books/ATTRIBUTION.md) lens or lenses justify the candidate, plus a terse reason each one applies.
+- The smell, when a smell is the reason the candidate matters.
+- The smallest behavior-preserving change that addresses it.
+- Whether the candidate is local organization work or an alternative tree-shape exploration.
+- Whether to flag the candidate as architecture work rather than organization-only work.
+- Blast radius: affected imports, tests, build config, generated files, or public paths.
+- Verification: which tests, type checks, search checks, or manual inspections would prove the change stayed structural.
 
 Do NOT start renaming or moving files yet. After the file is written, ask the user: "Which of these would you like to apply?"
 
@@ -56,5 +88,11 @@ Once the user picks a candidate, walk the change with them before touching the d
 - **Plan rename, split, merge, and move as distinct steps**, even if they happen in one commit — each is reversible if separated.
 - **Use the version-control rename** (`git mv` or the language-server rename) so history follows. See the Mechanics section of [references/NAMING.md](references/NAMING.md) and the Fixing folders section of [references/FOLDERS.md](references/FOLDERS.md) for per-pillar detail.
 - **Apply the predictiveness test again** after the change. If the new tree still doesn't reveal the architecture, the change wasn't enough.
+- **Run the smallest relevant verification** after each applied step: import search for moves, type check for path updates, tests for touched behavior contracts, and project validation scripts if present.
+- **Keep structural and behavior edits separate** in the diff where practical. If behavior must change, say so and stop treating it as organization-only work.
 
 If during the conversation a new grouping concept emerges that doesn't exist anywhere yet, name it — and use that name consistently across files, folders, and any prose. **The naming we land on is itself an artifact** worth preserving in a code comment, ADR, or CONTEXT.md if the project has one.
+
+## Before presenting
+
+Run the key tests once more: predictiveness, cohesion, fragmentation, boundary, behavior, smell triage, and vertical trace when the issue spans UI, application logic, persistence, or schema files. If a candidate is speculative, behavior-changing, or really architecture work, say that plainly and do not present it as an organization-only fix.
