@@ -13,7 +13,7 @@ Use one primary decision pressure: **reduce reader complexity by increasing pred
 
 Secondary guardrails:
 
-- Ground each diagnosis in one local rule lens from [references/agent-rules-books](references/agent-rules-books/ATTRIBUTION.md): **A Philosophy of Software Design** by default, **Refactoring** for safety, and **Clean Architecture** or **Domain-Driven Design Distilled** only when dependency direction or domain boundaries are the real issue.
+- Ground each diagnosis in one local rule lens from [references/agent-rules-books](references/agent-rules-books/ATTRIBUTION.md): **A Philosophy of Software Design** by default, **Refactoring** for safety, **Refactoring.Guru** for smell treatment, **The Pragmatic Programmer** for duplicated knowledge or vertical traces, and **Clean Architecture** or **Domain-Driven Design Distilled** only when dependency direction or domain boundaries are the real issue.
 - Treat organization work as **behavior-preserving refactoring** unless the user explicitly asks for behavior changes.
 - Prefer project-specific concepts over type buckets, roles, or implementation mechanisms.
 - Split or merge by total reader burden, not by file size, habit, or "one thing per file" slogans.

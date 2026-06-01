@@ -6,6 +6,8 @@ The vendored files in this folder are copied from the repository's `*.mini.md` r
 
 - `a-philosophy-of-software-design.mini.md`
 - `refactoring.mini.md`
+- `refactoring-guru.mini.md`
+- `the-pragmatic-programmer.mini.md`
 - `clean-architecture.mini.md`
 - `domain-driven-design-distilled.mini.md`
 

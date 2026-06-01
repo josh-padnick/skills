@@ -6,6 +6,8 @@ Ground every diagnosis in one local rule lens from [agent-rules-books](agent-rul
 
 - **[A Philosophy of Software Design](agent-rules-books/a-philosophy-of-software-design.mini.md)** — reduce reader complexity, reject shallow boundaries, hide knowledge where it belongs, and split or merge by total complexity.
 - **[Refactoring](agent-rules-books/refactoring.mini.md)** — keep the candidate behavior-preserving, small, reversible, and aimed at the current blocking smell.
+- **[Refactoring.Guru](agent-rules-books/refactoring-guru.mini.md)** — use when the main work is classifying a smell, choosing the smallest treatment, and knowing when to stop.
+- **[The Pragmatic Programmer](agent-rules-books/the-pragmatic-programmer.mini.md)** — use when a trace exposes duplicated knowledge, non-orthogonal concerns, missing feedback, or a need for one authoritative owner.
 - **[Clean Architecture](agent-rules-books/clean-architecture.mini.md)** — use only when source dependencies, framework details, persistence details, or delivery mechanisms are shaping the core file tree.
 - **[Domain-Driven Design Distilled](agent-rules-books/domain-driven-design-distilled.mini.md)** — use only when domain language, bounded contexts, aggregates, or business capabilities are the reason the current folder or file names mislead.
 
@@ -49,7 +51,7 @@ Record the trace as:
 Trace -> Breakpoint -> Rule lens -> Candidate -> Verification -> Architecture flag?
 ```
 
-Use **A Philosophy of Software Design** when the trace exposes cognitive load, hidden dependencies, shallow pass-through files, or temporal coupling. Use **Clean Architecture** when dependency direction is wrong. Use **Domain-Driven Design Distilled** when the trace exposes confused business language. Use **Refactoring** to keep any proposed change behavior-preserving and reviewable.
+Use **A Philosophy of Software Design** when the trace exposes cognitive load, hidden dependencies, shallow pass-through files, or temporal coupling. Use **The Pragmatic Programmer** when the trace exposes duplicated knowledge, non-orthogonal concerns, missing feedback, or no authoritative owner. Use **Clean Architecture** when dependency direction is wrong. Use **Domain-Driven Design Distilled** when the trace exposes confused business language. Use **Refactoring** to keep any proposed change behavior-preserving and reviewable.
 
 ## Tree smells
 
@@ -73,6 +75,7 @@ Use **A Philosophy of Software Design** when the trace exposes cognitive load, h
 - **Divergent folder** — one folder changes for several unrelated reasons. Candidate: split by the reasons to change, but only when each new folder has a predictive name.
 - **Always-together files** — files in separate folders repeatedly change in the same commits. Candidate: merge or co-locate if they form one concern. Treat broad refactors and mechanical formatting commits as noise.
 - **Always-separate halves** — one file's top and bottom halves change independently. Candidate: split mixed scope along the real concerns.
+- **Duplicated system fact** — the same business rule, mapping, status meaning, schema fact, or validation rule appears in several files. Candidate: find the authoritative owner and make the rest derive, validate against it, or translate at the edge.
 
 ## Boundary smells
 
