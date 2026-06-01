@@ -46,7 +46,7 @@ The organization review is rendered as a single self-contained HTML file in the 
 
 ## Header
 
-Repo name, date, and a compact legend: amber = rename, blue = move, emerald = new file, red strikethrough = removed file. No introduction paragraph — straight into the candidates.
+Repo name, date, and a compact legend: amber = rename, blue = move, emerald = new file, red strikethrough = removed file. Also include a blast-radius legend: `Small` = ≤5 affected references, `Medium` = 5–25, `Large` = 25+. No introduction paragraph — straight into the candidates.
 
 ## Candidate card
 
@@ -58,7 +58,7 @@ Each candidate is one `<article>`:
 - **Badge row** — three badges:
   - **Pillar**: `folders` (teal), `naming` (indigo), `scoping` (violet).
   - **Recommendation strength**: `Strong` = emerald, `Worth exploring` = amber, `Speculative` = slate.
-  - **Blast radius**: `S` (≤5 imports), `M` (5–25), `L` (25+), rendered as a small monospaced tag.
+  - **Blast radius**: spell out `Small`, `Medium`, or `Large`; include the count when known, e.g. `Blast radius: Small (3 refs)`. Do not use unexplained `S`, `M`, or `L` letters.
 - **Smell / lens** — one compact line when the candidate comes from [SMELLS.md](SMELLS.md), e.g. `suffix inconsistency · APoSD + Refactoring`.
 - **Before / After file tree** — the centrepiece. Two columns, side by side. See patterns below.
 - **Problem** — one sentence. What hurts.
