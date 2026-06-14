@@ -10,15 +10,9 @@ First, choose the highest review-useful frame from an implicit ladder: system go
 
 The first sentence should name the selected frame without mentioning implementation mechanisms. The second sentence can summarize the PR's answer. For migration work, prefer "where database schema evolution belongs in the application lifecycle" over "which database role runs migrations."
 
-## Frame Challenge
+Fold the frame challenge into this section instead of creating a separate default heading. State whether the PR appears to be solving the right problem and name the main design question a reviewer should keep in mind. Mention alternatives only when they clarify the principles or would change the review outcome.
 
-State whether the PR appears to be solving the right problem. Include:
-
-- The stronger framing as a lifecycle, ownership, timing, or responsibility question.
-- The design question a reviewer should keep asking while reading the diff.
-- Any alternative approaches that deserve comparison.
-
-If your frame names a specific database role, migration tool, command, file, route, or generated artifact, check whether that is really the frame or just evidence for a broader frame.
+If this section names a specific database role, migration tool, command, file, route, or generated artifact as the frame, rewrite it one notch higher and move that detail to Approach, Tradeoffs, or What To Review.
 
 ## Governing Principles
 
@@ -30,7 +24,7 @@ Principles should describe lifecycle, reliability, safety, operability, and user
 
 ## Approach Taken
 
-Summarize the main implementation moves by subsystem. Focus on responsibility boundaries, lifecycle changes, data flow, public contracts, and operational behavior.
+Summarize the main implementation moves by subsystem. Focus on how the PR answers the principles above: lifecycle boundaries, responsibility boundaries, data flow, public contracts, operational behavior, and any role/tool/command choices.
 
 ## Major Tradeoffs
 
