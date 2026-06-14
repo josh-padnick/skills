@@ -8,6 +8,8 @@ Explain the broader engineering problem in 2-4 sentences. Name the abstraction l
 
 First, choose the highest review-useful frame from an implicit ladder: system goal -> subsystem capability -> lifecycle/operating-model question -> design direction -> implementation mechanism. Prefer "how should the system manage X across its lifecycle?" over a frame that names a role, tool, command, file, API, or other implementation mechanism.
 
+The first sentence should name the selected frame without mentioning implementation mechanisms. The second sentence can summarize the PR's answer. For migration work, prefer "where database schema evolution belongs in the application lifecycle" over "which database role runs migrations."
+
 ## Frame Challenge
 
 State whether the PR appears to be solving the right problem. Include:
@@ -23,6 +25,8 @@ If your frame names a specific database role, migration tool, command, file, rou
 List 3-7 principles. For each, give a short verdict and evidence:
 
 - **Principle**: upheld / partial / violated / unproven. Evidence or concern.
+
+Principles should describe lifecycle, reliability, safety, operability, and user/developer-experience invariants. Avoid principles that merely restate implementation steps.
 
 ## Approach Taken
 
