@@ -88,7 +88,9 @@ For example, if a PR says "move migrations to an external ops command," the broa
 
 Derive 3-7 principles that should govern the PR. Keep them concrete enough to evaluate.
 
-Good principles are about invariants and responsibility boundaries, not preferences. Examples:
+Good principles are about invariants, lifecycle expectations, and responsibility boundaries, not preferences or implementation steps. State each principle in implementation-independent language first; then, if useful, add a short verdict about how the PR measures up. Do not let file references or command names become the principle.
+
+Examples:
 
 - Schema evolution should have an explicit lifecycle: local setup, CI, deployment, runtime startup, and maintenance should each have a known responsibility.
 - Runtime startup should be predictable: it should either serve against a compatible schema or fail clearly before serving.
@@ -97,7 +99,7 @@ Good principles are about invariants and responsibility boundaries, not preferen
 - CI should exercise the lifecycle and failure modes the deployed app relies on.
 - Generated code, docs, and tests should move with the contract they describe.
 
-For each principle, assess whether the PR upholds it, partially upholds it, violates it, or leaves it unproven. Name the evidence: files, tests, commands, docs, or missing checks.
+After naming the principles, assess whether the PR upholds them, partially upholds them, violates them, or leaves them unproven. Use evidence sparingly: name representative files, tests, commands, docs, or missing checks only after the principle is clear.
 
 ## Analysis Shape
 
@@ -118,6 +120,7 @@ Before finalizing the report, run a quick frame audit:
 - If the Big Picture's governing question mentions a database role, CLI, file, function, or command, rewrite it one notch higher.
 - If the first paragraph could only apply to the chosen implementation, rewrite it so alternatives could be compared.
 - If the principles mostly restate code changes, rewrite them as lifecycle, reliability, safety, operability, or user/developer-experience principles.
+- If principle bullets lead with filenames, commands, APIs, or test names, rewrite them so the principle comes first and the evidence follows.
 - If the visible report starts debating implementation details before naming principles, move that material into Approach, Tradeoffs, or Review Guidance.
 
 ## Review Recommendation
