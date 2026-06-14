@@ -15,11 +15,12 @@ This is not a substitute for a detailed code review. It prepares the reviewer to
 
 1. Gather context before judging.
 2. Reconstruct the stated problem.
-3. Step one abstraction level up and name the governing design question.
-4. Extract the governing principles.
-5. Assess the PR against those principles.
-6. Explain the implementation approach and tradeoffs.
-7. Recommend how to review the code.
+3. Build an abstraction ladder from high-level goal to concrete implementation.
+4. Choose the highest review-useful frame.
+5. Extract the governing principles.
+6. Assess the PR against those principles.
+7. Explain the implementation approach and tradeoffs.
+8. Recommend how to review the code.
 
 When the user provides a PR URL, prefer the GitHub connector or `gh` for PR metadata, changed files, patch, review comments, CI status, and linked issues. If a local checkout is available, compare the PR branch against its base with Git commands and read touched docs/tests directly.
 
@@ -35,20 +36,42 @@ Collect enough evidence to avoid merely summarizing the PR description:
 
 Read the most decision-relevant files. Do not read every changed file when the PR shape is already clear; save detailed inspection for the recommended review pass.
 
+## Abstraction Ladder
+
+Many PRs are presented as a crisp implementation question even though the real decision chain starts several levels higher. Before writing the Big Picture or Frame Challenge, sketch 4-6 abstraction levels:
+
+1. Product or system goal.
+2. Capability or subsystem responsibility that supports that goal.
+3. Operating-model, lifecycle, ownership, timing, or policy question.
+4. Design direction chosen by the PR.
+5. Implementation mechanisms in the diff.
+
+Choose the sweet spot: the highest level that is still specific enough to guide review of this PR. If the frame names a database role, migration tool, command, file, class, route, protocol, or generated artifact, it is usually still describing the implementation answer. Climb one notch unless that primitive is itself the architectural subject.
+
+For a database migration PR:
+
+- Too high: "How should Fabrica persist data?"
+- Sweet spot: "How should Fabrica manage database schema evolution across local development, CI, deployment, runtime startup, and maintenance?"
+- Too low: "Under which database role should schema convergence happen?"
+- Too low: "Should runtime startup only verify schema compatibility?"
+
+Database roles, goose commands, startup checks, and privilege scripts are design constraints, evidence, or tradeoffs within the schema-evolution frame. Do not let them become the frame unless the PR is primarily about credential management.
+
 ## Frame Challenge
 
 Before accepting the PR's stated goal, explicitly ask:
 
 - What broader system or operating model is this PR changing?
-- What lifecycle, ownership, timing, or responsibility question sits one level above the proposed solution?
+- What lifecycle, ownership, timing, or policy question sits above the proposed solution?
+- Does the proposed frame name an implementation mechanism that should instead be evidence under a broader frame?
 - What should be true in a well-designed version of that broader system?
 - Is the PR solving the root design problem, or only moving complexity somewhere less visible?
 - What alternatives would a strong reviewer expect the author to have considered?
 - What would make the chosen direction wrong despite the code working?
 
-State the frame as a question before stating the PR's answer. A question such as "at what points in the app lifecycle should the database schema be migrated?" is usually a better frame than "runtime should only verify schema compatibility," because the first names the design choice while the second already assumes the chosen implementation.
+State the frame as a question before stating the PR's answer. A question such as "how should the app manage schema evolution across its lifecycle?" is usually a better frame than "under which database role should migrations run?" or "should runtime only verify schema compatibility?" because the first names the design space while the others already sit inside a chosen design.
 
-For example, if a PR says "move migrations to an external ops command," the broader frame is not only "remove startup migrations." It is: "When should database schema migrations happen across local development, CI, deployment, runtime startup, and maintenance operations, and who should own each step?" Then evaluate whether the PR's answer, such as explicit migration/setup commands plus startup compatibility checks, follows from sound lifecycle and privilege principles.
+For example, if a PR says "move migrations to an external ops command," the broader frame is not only "remove startup migrations" or "which role runs goose." It is: "How should Fabrica manage database schema evolution across local development, CI, deployment, runtime startup, and maintenance?" Then evaluate whether the PR's answer, such as explicit migration/setup commands plus startup compatibility checks, follows from sound lifecycle, reliability, and operational principles.
 
 ## Principle Pass
 
@@ -56,10 +79,11 @@ Derive 3-7 principles that should govern the PR. Keep them concrete enough to ev
 
 Good principles are about invariants and responsibility boundaries, not preferences. Examples:
 
-- Runtime startup should not require privileges it does not need to serve requests.
-- Schema-changing operations should be explicit, auditable, and owned by setup/deploy flows.
+- Schema evolution should have an explicit lifecycle: local setup, CI, deployment, runtime startup, and maintenance should each have a known responsibility.
+- Runtime startup should be predictable: it should either serve against a compatible schema or fail clearly before serving.
+- Schema-changing operations should be explicit, auditable, and repeatable outside request-serving paths.
 - Local development should stay easy without teaching habits that differ dangerously from production.
-- CI should exercise the same privilege boundaries the deployed app relies on.
+- CI should exercise the lifecycle and failure modes the deployed app relies on.
 - Generated code, docs, and tests should move with the contract they describe.
 
 For each principle, assess whether the PR upholds it, partially upholds it, violates it, or leaves it unproven. Name the evidence: files, tests, commands, docs, or missing checks.
