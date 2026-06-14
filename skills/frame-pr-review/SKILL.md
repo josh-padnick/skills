@@ -15,7 +15,7 @@ This is not a substitute for a detailed code review. It prepares the reviewer to
 
 1. Gather context before judging.
 2. Reconstruct the stated problem.
-3. Step one abstraction level up and challenge the frame.
+3. Step one abstraction level up and name the governing design question.
 4. Extract the governing principles.
 5. Assess the PR against those principles.
 6. Explain the implementation approach and tradeoffs.
@@ -40,13 +40,15 @@ Read the most decision-relevant files. Do not read every changed file when the P
 Before accepting the PR's stated goal, explicitly ask:
 
 - What broader system or operating model is this PR changing?
-- What problem class does this belong to one level up?
+- What lifecycle, ownership, timing, or responsibility question sits one level above the proposed solution?
 - What should be true in a well-designed version of that broader system?
 - Is the PR solving the root design problem, or only moving complexity somewhere less visible?
 - What alternatives would a strong reviewer expect the author to have considered?
 - What would make the chosen direction wrong despite the code working?
 
-For example, if a PR says "move migrations to an external ops command," the broader frame is not only "remove startup migrations." It is the app's database schema management model: who owns schema convergence, which roles have privilege, when local dev and CI apply migrations, how runtime verifies compatibility, and how operational mistakes fail safely.
+State the frame as a question before stating the PR's answer. A question such as "at what points in the app lifecycle should the database schema be migrated?" is usually a better frame than "runtime should only verify schema compatibility," because the first names the design choice while the second already assumes the chosen implementation.
+
+For example, if a PR says "move migrations to an external ops command," the broader frame is not only "remove startup migrations." It is: "When should database schema migrations happen across local development, CI, deployment, runtime startup, and maintenance operations, and who should own each step?" Then evaluate whether the PR's answer, such as explicit migration/setup commands plus startup compatibility checks, follows from sound lifecycle and privilege principles.
 
 ## Principle Pass
 
