@@ -48,6 +48,15 @@ Many PRs are presented as a crisp implementation question even though the real d
 
 Choose the sweet spot: the highest level that is still specific enough to guide review of this PR. If the frame names a database role, migration tool, command, file, class, route, protocol, or generated artifact, it is usually still describing the implementation answer. Climb one notch unless that primitive is itself the architectural subject.
 
+Use this acceptance test for the chosen frame:
+
+- It explains why the PR matters to the system without assuming the implementation.
+- It gives principles a place to attach before discussing files or commands.
+- It makes the chosen approach feel like one possible answer, not the only thinkable answer.
+- It is specific enough that a reviewer can decide which evidence in the diff matters.
+
+For the Big Picture section, write the first sentence at the selected frame. The first sentence should usually not mention roles, tools, commands, files, functions, route names, or checks. Put those in the approach, evidence, tradeoffs, or review guidance.
+
 For a database migration PR:
 
 - Too high: "How should Fabrica persist data?"
@@ -56,6 +65,8 @@ For a database migration PR:
 - Too low: "Should runtime startup only verify schema compatibility?"
 
 Database roles, goose commands, startup checks, and privilege scripts are design constraints, evidence, or tradeoffs within the schema-evolution frame. Do not let them become the frame unless the PR is primarily about credential management.
+
+For PR 143-style work, the Big Picture should start closer to: "This PR is about where database schema evolution belongs in Fabrica's application lifecycle." Then explain that the PR's answer is to make schema convergence an explicit setup/deploy/test concern while app startup verifies compatibility. Mention database roles only after that, as one reason this lifecycle split matters.
 
 ## Frame Challenge
 
@@ -97,8 +108,15 @@ Keep the output reviewer-oriented:
 - Prefer "what matters for review" over exhaustive summary.
 - State uncertainty and where to verify it.
 - Separate "this is the intended design" from "this diff proves it."
+- Present the report in this order: big-picture frame, governing principles, PR approach, tradeoffs and review route.
 - Call out cross-cutting risks: lifecycle order, permissions, generated artifacts, backwards-incompatible behavior, data migration safety, local/CI/prod drift, test realism, and docs drift.
 - Give the reviewer a rough route through the diff: first files to read, tests to scrutinize, commands to run, and questions to ask.
+
+Before finalizing the report, run a quick frame audit:
+
+- If the Big Picture's governing question mentions a database role, CLI, file, function, or command, rewrite it one notch higher.
+- If the first paragraph could only apply to the chosen implementation, rewrite it so alternatives could be compared.
+- If the principles mostly restate code changes, rewrite them as lifecycle, reliability, safety, operability, or user/developer-experience principles.
 
 ## Review Recommendation
 
