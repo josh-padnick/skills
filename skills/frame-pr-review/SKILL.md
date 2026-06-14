@@ -109,6 +109,7 @@ Keep the output reviewer-oriented:
 - State uncertainty and where to verify it.
 - Separate "this is the intended design" from "this diff proves it."
 - Present the report in this order: big-picture frame, governing principles, PR approach, tradeoffs and review route.
+- Do not make "Frame Challenge" a default top-level output section. Use it as internal reasoning, then fold the conclusion into the Big Picture unless the user explicitly asks to see the challenge separately.
 - Call out cross-cutting risks: lifecycle order, permissions, generated artifacts, backwards-incompatible behavior, data migration safety, local/CI/prod drift, test realism, and docs drift.
 - Give the reviewer a rough route through the diff: first files to read, tests to scrutinize, commands to run, and questions to ask.
 
@@ -117,6 +118,7 @@ Before finalizing the report, run a quick frame audit:
 - If the Big Picture's governing question mentions a database role, CLI, file, function, or command, rewrite it one notch higher.
 - If the first paragraph could only apply to the chosen implementation, rewrite it so alternatives could be compared.
 - If the principles mostly restate code changes, rewrite them as lifecycle, reliability, safety, operability, or user/developer-experience principles.
+- If the visible report starts debating implementation details before naming principles, move that material into Approach, Tradeoffs, or Review Guidance.
 
 ## Review Recommendation
 
