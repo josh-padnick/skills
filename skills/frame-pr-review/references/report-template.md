@@ -4,7 +4,9 @@ Use this template for a reviewer briefing. Trim sections that do not apply.
 
 ## Big Picture
 
-Explain the broader engineering problem in 2-4 sentences. Name the abstraction level above the PR's stated task as a governing design question before describing the PR's answer. Prefer "when/where/who should own X in the system lifecycle?" over an implementation-shaped thesis.
+Explain the broader engineering problem in 2-4 sentences. Name the abstraction level above the PR's stated task as a governing design question before describing the PR's answer.
+
+First, choose the highest review-useful frame from an implicit ladder: system goal -> subsystem capability -> lifecycle/operating-model question -> design direction -> implementation mechanism. Prefer "how should the system manage X across its lifecycle?" over a frame that names a role, tool, command, file, API, or other implementation mechanism.
 
 ## Frame Challenge
 
@@ -13,6 +15,8 @@ State whether the PR appears to be solving the right problem. Include:
 - The stronger framing as a lifecycle, ownership, timing, or responsibility question.
 - The design question a reviewer should keep asking while reading the diff.
 - Any alternative approaches that deserve comparison.
+
+If your frame names a specific database role, migration tool, command, file, route, or generated artifact, check whether that is really the frame or just evidence for a broader frame.
 
 ## Governing Principles
 
