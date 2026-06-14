@@ -16,11 +16,12 @@ If this section names a specific database role, migration tool, command, file, r
 
 ## Governing Principles
 
-List 3-7 principles. For each, give a short verdict and evidence:
+List 3-7 principles. Start each item with the principle itself, phrased independently of the implementation. Then add a short verdict and only the most representative evidence.
 
-- **Principle**: upheld / partial / violated / unproven. Evidence or concern.
+- **Principle**: upheld / partial / violated / unproven. Brief evidence or concern.
 
 Principles should describe lifecycle, reliability, safety, operability, and user/developer-experience invariants. Avoid principles that merely restate implementation steps.
+Do not lead principle bullets with filenames, command names, database roles, APIs, or tests; those belong after the principle as evidence.
 
 ## Approach Taken
 
