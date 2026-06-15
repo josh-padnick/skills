@@ -4,13 +4,13 @@ Use this template for a reviewer briefing. Trim sections that do not apply.
 
 ## Big Picture
 
-Explain the broader engineering problem in 2-4 sentences. Name the abstraction level above the PR's stated task as a governing design question before describing the PR's answer.
+Explain the broader engineering problem in 1-2 sentences. Name the abstraction level above the PR's stated task as a governing design question before describing the PR's answer.
 
 First, use the Abstraction Chain to choose the best review-useful frame: system goal -> subsystem capability -> lifecycle/operating-model question -> design direction -> implementation mechanism. Prefer a frame that names the durable engineering problem over one that names a role, tool, command, file, API, or other implementation mechanism.
 
-The first sentence should name the selected frame without mentioning implementation mechanisms. The second sentence can summarize the PR's answer. For migration work, prefer "how the system should maintainably manage database schema migrations" over "which database role runs migrations" or "which function runs the migration tool."
+The first 1 - 2 sentences should name the selected frame without mentioning implementation mechanisms.
 
-Fold the frame challenge into this section instead of creating a separate default heading. State whether the PR appears to be solving the right problem and name the main design question a reviewer should keep in mind. Mention alternatives only when they clarify the principles or would change the review outcome.
+Then create a a second paragraph that summarizes the PR's answer. For migration work, prefer "how the system should maintainably manage database schema migrations" over "which database role runs migrations" or "which function runs the migration tool."
 
 If this section names a specific database role, migration tool, command, file, route, or generated artifact as the frame, rewrite it one notch higher and move that detail to Approach, Tradeoffs, or What To Review.
 
