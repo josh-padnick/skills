@@ -1,6 +1,6 @@
 ---
 name: frame-pr-review
-description: Analyze a GitHub pull request from the engineering-decision level before code review. Use when Codex is pointed at a PR URL, branch, diff, or local PR checkout and asked to explain the problem being solved, challenge the framing one abstraction level up, identify governing principles, summarize the chosen approach and tradeoffs, call out what reviewers should inspect, or recommend a review strategy rather than immediately doing a line-by-line bug review.
+description: Analyze a GitHub pull request from the engineering-decision level before code review. Use when Codex is pointed at a PR URL, branch, diff, or local PR checkout and asked to explain the problem being solved, show the abstraction chain behind the PR, challenge the framing one abstraction level up, identify governing principles, summarize the chosen approach and tradeoffs, call out what reviewers should inspect, or recommend a review strategy rather than immediately doing a line-by-line bug review.
 ---
 
 # Frame PR Review
@@ -15,8 +15,8 @@ This is not a substitute for a detailed code review. It prepares the reviewer to
 
 1. Gather context before judging.
 2. Reconstruct the stated problem.
-3. Build an abstraction ladder from high-level goal to concrete implementation.
-4. Choose the highest review-useful frame.
+3. Build and show an abstraction chain from the PR's concrete move upward, then back down through concise how steps.
+4. Choose and bold the best review-useful frame.
 5. Extract the governing principles.
 6. Identify key assumptions that need human judgment.
 7. Explain the implementation approach.
@@ -37,17 +37,33 @@ Collect enough evidence to avoid merely summarizing the PR description:
 
 Read the most decision-relevant files. Do not read every changed file when the PR shape is already clear; save detailed inspection for the recommended review pass.
 
-## Abstraction Ladder
+## Abstraction Chain
 
-Many PRs are presented as a crisp implementation question even though the real decision chain starts several levels higher. Before writing the Big Picture or Frame Challenge, sketch 4-6 abstraction levels:
+Many PRs are presented as a crisp implementation question even though the real decision chain starts several levels higher. Before writing the Big Picture or Frame Challenge, build a visible abstraction chain.
 
-1. Product or system goal.
-2. Capability or subsystem responsibility that supports that goal.
-3. Operating-model, lifecycle, ownership, timing, or policy question.
-4. Design direction chosen by the PR.
-5. Implementation mechanisms in the diff.
+Start with what the PR is actually doing, stated in one sentence from the PR title/body/diff. Then climb upward by repeatedly asking "Why is that important?" or "So we can do what?" Stop climbing when the answer becomes a broad product or system goal that is still meaningful for this PR.
 
-Choose the sweet spot: the highest level that is still specific enough to guide review of this PR. If the frame names a database role, migration tool, command, file, class, route, protocol, or generated artifact, it is usually still describing the implementation answer. Climb one notch unless that primitive is itself the architectural subject.
+After climbing, return to the starting point and go downward by asking "How?" Add only concise technical answers that name the chosen design direction, mechanism, workflow, API, data flow, or file-level move. If a "how" answer needs more than one sentence, stop descending; those implementation details belong in Approach Taken, Assessment, or What To Review.
+
+Avoid inserting best practices, virtues, or principles into the chain as "how" steps. A sentence such as "keep runtime store startup permission-scoped" is a principle or practice, not a technical how. A sentence such as "remove the in-process migration runner and run migrations through explicit ops scripts" is a technical how.
+
+Show the chain in the report as a list or compact table in construction order:
+
+1. Start: what the PR actually does.
+2. Up: each "why is that important?" / "so we can do what?" answer.
+3. Down: each concise "how?" answer from the starting point.
+
+Bold the level that is the best framing for the human reviewer to consider. The best frame is usually a lifecycle, operating-model, ownership, timing, or policy question, not the highest product goal and not the lowest mechanism.
+
+For PR 143-style migration work, a good chain is:
+
+- Enable Fabrica to evolve quickly without compromising safety, reliability, or end-user UX.
+- Have a safe, efficient approach to evolving the database over time.
+- **Set up a maintainable, robust approach to database schema migrations.**
+- Move Postgres migrations to a Goose-managed setup.
+- Remove the in-process Go migration runner/embed and replace it with explicit operating scripts.
+
+Choose the sweet spot: the level that gives the reviewer the most useful judgment frame while staying specific enough to guide review of this PR. If the frame names a database role, migration tool, command, file, class, route, protocol, or generated artifact, it is usually still describing the implementation answer. Climb one notch unless that primitive is itself the architectural subject.
 
 Use this acceptance test for the chosen frame:
 
@@ -56,24 +72,26 @@ Use this acceptance test for the chosen frame:
 - It makes the chosen approach feel like one possible answer, not the only thinkable answer.
 - It is specific enough that a reviewer can decide which evidence in the diff matters.
 
-For the Big Picture section, write the first sentence at the selected frame. The first sentence should usually not mention roles, tools, commands, files, functions, route names, or checks. Put those in the approach, evidence, tradeoffs, or review guidance.
+For the Big Picture section, write the first sentence at the selected frame. The first sentence should usually not mention roles, tools, commands, files, functions, route names, or checks unless the selected frame itself legitimately names that primitive. Put those lower-level details in Abstraction Chain, Approach, Assessment, Tradeoffs, or Review Guidance.
 
 For a database migration PR:
 
 - Too high: "How should Fabrica persist data?"
-- Sweet spot: "How should Fabrica manage database schema evolution across local development, CI, deployment, runtime startup, and maintenance?"
+- Useful but often still high: "How should Fabrica safely evolve its database over time?"
+- Sweet spot: "How should Fabrica set up a maintainable, robust approach to database schema migrations?"
+- Lower implementation frame: "Where should schema convergence happen across local development, CI, deployment, runtime startup, and maintenance?"
 - Too low: "Under which database role should schema convergence happen?"
 - Too low: "Should runtime startup only verify schema compatibility?"
 
 Database roles, goose commands, startup checks, and privilege scripts are design constraints, evidence, or tradeoffs within the schema-evolution frame. Do not let them become the frame unless the PR is primarily about credential management.
 
-For PR 143-style work, the Big Picture should start closer to: "This PR is about where database schema evolution belongs in Fabrica's application lifecycle." Then explain that the PR's answer is to make schema convergence an explicit setup/deploy/test concern while app startup verifies compatibility. Mention database roles only after that, as one reason this lifecycle split matters.
+For PR 143-style work, the Big Picture should start closer to: "This PR is about setting up a maintainable approach to database schema migrations as Fabrica evolves." Then explain that the PR's answer is to make schema convergence an explicit setup/deploy/test concern while app startup verifies compatibility. Mention database roles only after that, as one reason this lifecycle split matters.
 
 Use contrastive calibration when the PR is a well-framed implementation slice:
 
 - Reject: "The governing question is which database role should run schema convergence." This is an implementation constraint pretending to be the frame.
 - Reject: "The stronger frame is that runtime should only verify schema compatibility." This states the PR's chosen answer, not the broader question.
-- Prefer: "The governing question is where database schema evolution belongs in the application lifecycle, and how local setup, CI, deployment, runtime startup, and maintenance should divide responsibility." This leaves room to compare answers before explaining why the PR's answer is reasonable.
+- Prefer: "The governing question is how Fabrica should maintainably manage database schema migrations as the product evolves." This leaves room to compare answers before explaining why the PR's lifecycle split is reasonable.
 
 ## Frame Challenge
 
@@ -87,9 +105,9 @@ Before accepting the PR's stated goal, explicitly ask:
 - What alternatives would a strong reviewer expect the author to have considered?
 - What would make the chosen direction wrong despite the code working?
 
-State the frame as a question before stating the PR's answer. A question such as "how should the app manage schema evolution across its lifecycle?" is usually a better frame than "under which database role should migrations run?" or "should runtime only verify schema compatibility?" because the first names the design space while the others already sit inside a chosen design.
+State the frame as a question before stating the PR's answer. A question such as "how should the app maintainably manage database schema migrations as it evolves?" is usually a better frame than "under which database role should migrations run?" or "should runtime only verify schema compatibility?" because the first names the design problem while the others already sit inside a chosen design.
 
-For example, if a PR says "move migrations to an external ops command," the broader frame is not only "remove startup migrations" or "which role runs goose." It is: "How should Fabrica manage database schema evolution across local development, CI, deployment, runtime startup, and maintenance?" Then evaluate whether the PR's answer, such as explicit migration/setup commands plus startup compatibility checks, follows from sound lifecycle, reliability, and operational principles.
+For example, if a PR says "move migrations to an external ops command," the broader frame is not only "remove startup migrations" or "which role runs goose." It is: "How should Fabrica maintainably manage database schema migrations as the product and deployment surfaces evolve?" Then evaluate whether the PR's answer, such as explicit migration/setup commands plus startup compatibility checks, follows from sound lifecycle, reliability, and operational principles.
 
 ## Principle Pass
 
@@ -146,7 +164,7 @@ Keep the output reviewer-oriented:
 - Prefer "what matters for review" over exhaustive summary.
 - State uncertainty and where to verify it.
 - Separate "this is the intended design" from "this diff proves it."
-- Present the report in this order: big-picture frame, key assumptions, governing principles, PR approach, assessment, tradeoffs, and review route.
+- Present the report in this order: big-picture frame, abstraction chain, key assumptions, governing principles, PR approach, assessment, tradeoffs, and review route.
 - Do not make "Frame Challenge" a default top-level output section. Use it as internal reasoning, then fold the conclusion into the Big Picture unless the user explicitly asks to see the challenge separately.
 - Call out cross-cutting risks: lifecycle order, permissions, generated artifacts, backwards-incompatible behavior, data migration safety, local/CI/prod drift, test realism, and docs drift.
 - Give the reviewer a rough route through the diff: first files to read, tests to scrutinize, commands to run, and questions to ask.
@@ -155,6 +173,8 @@ Before finalizing the report, run a quick frame audit:
 
 - If the Big Picture's governing question mentions a database role, CLI, file, function, or command, rewrite it one notch higher.
 - If the first paragraph could only apply to the chosen implementation, rewrite it so alternatives could be compared.
+- If the Abstraction Chain does not start with what the PR actually does, rebuild it from the PR title/body/diff before climbing upward.
+- If a "how" row is really a best practice, principle, or desired property, move it to Governing Principles and replace it with a concrete technical approach or stop descending.
 - If the principles mostly restate code changes, rewrite them as lifecycle, reliability, safety, operability, or user/developer-experience principles with 1-2 explanatory sentences.
 - If principle bullets include verdicts, filenames, commands, APIs, or test names, move that material to the Assessment table.
 - If the Assessment table does not have one row per governing principle, make the mapping explicit or explain why a principle is not assessable from the diff.
