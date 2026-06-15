@@ -1,6 +1,6 @@
 ---
 name: frame-pr-review
-description: Analyze a GitHub pull request from the engineering-decision level before code review. Use when Codex is pointed at a PR URL, branch, diff, or local PR checkout and asked to explain the problem being solved, show the abstraction chain behind the PR, challenge the framing one abstraction level up, identify governing principles, summarize the chosen approach and tradeoffs, call out what reviewers should inspect, or recommend a review strategy rather than immediately doing a line-by-line bug review.
+description: Analyze a GitHub pull request from the engineering-decision level before code review. Use when Codex is pointed at a PR URL, branch, diff, or local PR checkout and asked to explain the problem being solved, show the abstraction chain behind the PR, challenge the framing one abstraction level up, identify best practice principles, summarize the chosen approach and tradeoffs, call out what reviewers should inspect, or recommend a review strategy rather than immediately doing a line-by-line bug review.
 ---
 
 # Frame PR Review
@@ -15,13 +15,14 @@ This is not a substitute for a detailed code review. It prepares the reviewer to
 
 1. Gather context before judging.
 2. Reconstruct the stated problem.
-3. Build and show an abstraction chain from the PR's concrete move upward, then back down through concise how steps.
+3. Build an abstraction chain from the PR's concrete move upward, then back down through concise how steps; show it from highest abstraction to lowest.
 4. Choose and bold the best review-useful frame.
-5. Extract the governing principles.
-6. Identify key assumptions that need human judgment.
-7. Explain the implementation approach.
-8. Assess the PR against the principles.
-9. Explain tradeoffs and recommend how to review the code.
+5. Extract the best practice principles.
+6. Summarize this PR's approach.
+7. Identify key assumptions that need human judgment.
+8. Explain the implementation approach.
+9. Assess the PR against the principles as recommendation-oriented sections.
+10. Explain tradeoffs and recommend how to review the code.
 
 When the user provides a PR URL, prefer the GitHub connector or `gh` for PR metadata, changed files, patch, review comments, CI status, and linked issues. If a local checkout is available, compare the PR branch against its base with Git commands and read touched docs/tests directly.
 
@@ -43,15 +44,18 @@ Many PRs are presented as a crisp implementation question even though the real d
 
 Start with what the PR is actually doing, stated in one sentence from the PR title/body/diff. Then climb upward by repeatedly asking "Why is that important?" or "So we can do what?" Stop climbing when the answer becomes a broad product or system goal that is still meaningful for this PR.
 
-After climbing, return to the starting point and go downward by asking "How?" Add only concise technical answers that name the chosen design direction, mechanism, workflow, API, data flow, or file-level move. If a "how" answer needs more than one sentence, stop descending; those implementation details belong in Approach Taken, Assessment, or What To Review.
+After climbing, return to the starting point and go downward by asking "How?" Add only concise technical answers that name the chosen design direction, mechanism, workflow, API, data flow, or file-level move. If a "how" answer needs more than one sentence, stop descending; those implementation details belong in Implementation Approach, Assessment, or What To Review.
 
 Avoid inserting best practices, virtues, or principles into the chain as "how" steps. A sentence such as "keep runtime store startup permission-scoped" is a principle or practice, not a technical how. A sentence such as "remove the in-process migration runner and run migrations through explicit ops scripts" is a technical how.
 
-Show the chain in the report as a list or compact table in construction order:
+Show the chain in the report as a list or compact table ordered from highest abstraction to lowest abstraction:
 
-1. Start: what the PR actually does.
-2. Up: each "why is that important?" / "so we can do what?" answer.
-3. Down: each concise "how?" answer from the starting point.
+1. Highest meaningful product or system goal.
+2. Intermediate capability, operating-model, lifecycle, ownership, timing, or policy levels.
+3. The detected starting level from the PR title/body/diff, marked with `*`.
+4. Lower concise "how?" answers.
+
+Add an italic note immediately below the chain: `* = Abstraction level first detected from the PR title/body/diff.`
 
 Bold the level that is the best framing for the human reviewer to consider. The best frame is usually a lifecycle, operating-model, ownership, timing, or policy question, not the highest product goal and not the lowest mechanism.
 
@@ -60,7 +64,7 @@ For PR 143-style migration work, a good chain is:
 - Enable Fabrica to evolve quickly without compromising safety, reliability, or end-user UX.
 - Have a safe, efficient approach to evolving the database over time.
 - **Set up a maintainable, robust approach to database schema migrations.**
-- Move Postgres migrations to a Goose-managed setup.
+- * Move Postgres migrations to a Goose-managed setup.
 - Remove the in-process Go migration runner/embed and replace it with explicit operating scripts.
 
 Choose the sweet spot: the level that gives the reviewer the most useful judgment frame while staying specific enough to guide review of this PR. If the frame names a database role, migration tool, command, file, class, route, protocol, or generated artifact, it is usually still describing the implementation answer. Climb one notch unless that primitive is itself the architectural subject.
@@ -72,7 +76,9 @@ Use this acceptance test for the chosen frame:
 - It makes the chosen approach feel like one possible answer, not the only thinkable answer.
 - It is specific enough that a reviewer can decide which evidence in the diff matters.
 
-For the Big Picture section, write the first sentence at the selected frame. The first sentence should usually not mention roles, tools, commands, files, functions, route names, or checks unless the selected frame itself legitimately names that primitive. Put those lower-level details in Abstraction Chain, Approach, Assessment, Tradeoffs, or Review Guidance.
+For the Big Picture section, write the first sentence at the selected frame. The first sentence should usually not mention roles, tools, commands, files, functions, route names, or checks unless the selected frame itself legitimately names that primitive. Put those lower-level details in Abstraction Chain, This PR's Approach, Implementation Approach, Assessment, Tradeoffs, or Review Guidance.
+
+Do not assert whether the frame is strong, good, correct, or successful in Big Picture. The introduction should name the frame and summarize the PR's answer; evaluation belongs in Assessment.
 
 For a database migration PR:
 
@@ -109,22 +115,27 @@ State the frame as a question before stating the PR's answer. A question such as
 
 For example, if a PR says "move migrations to an external ops command," the broader frame is not only "remove startup migrations" or "which role runs goose." It is: "How should Fabrica maintainably manage database schema migrations as the product and deployment surfaces evolve?" Then evaluate whether the PR's answer, such as explicit migration/setup commands plus startup compatibility checks, follows from sound lifecycle, reliability, and operational principles.
 
-## Principle Pass
+## Best Practice Principles
 
-Derive 3-7 principles that should govern the PR. Keep them concrete enough to evaluate.
+Derive up to 5 principles that should govern the PR. If more than 5 are truly necessary, group them under short labels rather than listing a long flat set.
 
-Good principles are about invariants, lifecycle expectations, and responsibility boundaries, not preferences or implementation steps. State each principle in implementation-independent language first. Do not evaluate the PR in the governing-principles list.
+Good principles are about invariants, lifecycle expectations, and responsibility boundaries, not preferences or implementation steps. State each principle in implementation-independent language first. Do not evaluate the PR in the best-practice-principles list.
+
+Phrase principles with active verbs in imperative form, using idiomatic engineering language. Prefer "Make the database schema evolution lifecycle explicit" over "Schema evolution should have an explicit lifecycle." Prefer "Separate migration permissions and application runtime permissions" over "Migration authority and application authority should be separated."
 
 For each principle, add 1-2 concise sentences explaining what the principle means, why it matters, and how a reviewer should apply it. Avoid file references, command names, test names, database roles, APIs, or verdict words in this section; those belong in Assessment.
 
 Examples:
 
-- Schema evolution should have an explicit lifecycle: local setup, CI, deployment, runtime startup, and maintenance should each have a known responsibility.
-- Runtime startup should be predictable: it should either serve against a compatible schema or fail clearly before serving.
-- Schema-changing operations should be explicit, auditable, and repeatable outside request-serving paths.
-- Local development should stay easy without teaching habits that differ dangerously from production.
-- CI should exercise the lifecycle and failure modes the deployed app relies on.
-- Generated code, docs, and tests should move with the contract they describe.
+- Make the database schema evolution lifecycle explicit: local setup, CI, deployment, runtime startup, and maintenance each need a known responsibility.
+- Keep runtime startup predictable: serving processes should either start against a compatible schema or fail clearly before serving.
+- Separate migration permissions and application runtime permissions: schema-changing work may need broader database permissions than request-serving code.
+- Rehearse the production operating order in local and CI workflows: convenience paths should not teach behavior that production cannot rely on.
+- Move docs, rules, and tests with the contract: lifecycle changes only stick when the repo's instructions and checks say the same thing.
+
+## This PR's Approach
+
+Summarize the PR's design answer in 1-2 sentences. Stay above file-level details here; explain the operating-model choice, responsibility split, or contract change.
 
 ## Key Assumptions
 
@@ -138,12 +149,17 @@ For each assumption, state a confidence level:
 
 Focus on assumptions that would change the review outcome if false. Avoid minor uncertainties and facts that the diff already proves.
 
-## Assessment Pass
+## Assessment
 
-After Approach Taken, assess the PR against the governing principles in a table with these columns:
+After Implementation Approach, assess the PR against the best practice principles as one short subsection per recommendation, not as a table.
 
-| Principle | Evaluation | Description |
-| --- | --- | --- |
+Each subsection should have a recommendation-oriented heading, then these fields:
+
+- **Principle**: name the matching best practice principle.
+- **Evaluation**: Strong / Good / Moderate / Poor / Unknown.
+- **Description**: explain the evidence, caveat, or missing confirmation.
+- **Recommendation**: say what the reviewer should accept, ask, fix, or verify.
+- **Confidence**: High / Medium / Low, based on how directly the diff supports the assessment.
 
 Use this evaluation scale:
 
@@ -153,7 +169,7 @@ Use this evaluation scale:
 - **Poor**: conflicts with the principle or leaves a high-risk gap.
 - **Unknown**: evidence is insufficient without author or operator input.
 
-Use evidence sparingly in the Description column: name representative files, tests, commands, docs, or missing checks only after the principle is clear.
+Use evidence sparingly in the Description field: name representative files, tests, commands, docs, or missing checks only after the principle is clear.
 
 ## Analysis Shape
 
@@ -164,7 +180,7 @@ Keep the output reviewer-oriented:
 - Prefer "what matters for review" over exhaustive summary.
 - State uncertainty and where to verify it.
 - Separate "this is the intended design" from "this diff proves it."
-- Present the report in this order: big-picture frame, abstraction chain, key assumptions, governing principles, PR approach, assessment, tradeoffs, and review route.
+- Present the report in this order: Big Picture, Abstraction Chain, Best Practice Principles, This PR's Approach, Key Assumptions, Implementation Approach, Assessment, Major Tradeoffs, What To Review, and Review Recommendation.
 - Do not make "Frame Challenge" a default top-level output section. Use it as internal reasoning, then fold the conclusion into the Big Picture unless the user explicitly asks to see the challenge separately.
 - Call out cross-cutting risks: lifecycle order, permissions, generated artifacts, backwards-incompatible behavior, data migration safety, local/CI/prod drift, test realism, and docs drift.
 - Give the reviewer a rough route through the diff: first files to read, tests to scrutinize, commands to run, and questions to ask.
@@ -173,12 +189,17 @@ Before finalizing the report, run a quick frame audit:
 
 - If the Big Picture's governing question mentions a database role, CLI, file, function, or command, rewrite it one notch higher.
 - If the first paragraph could only apply to the chosen implementation, rewrite it so alternatives could be compared.
+- If Big Picture evaluates the frame or says it is strong/good/correct, remove that sentence or move the judgment to Assessment.
 - If the Abstraction Chain does not start with what the PR actually does, rebuild it from the PR title/body/diff before climbing upward.
-- If a "how" row is really a best practice, principle, or desired property, move it to Governing Principles and replace it with a concrete technical approach or stop descending.
-- If the principles mostly restate code changes, rewrite them as lifecycle, reliability, safety, operability, or user/developer-experience principles with 1-2 explanatory sentences.
-- If principle bullets include verdicts, filenames, commands, APIs, or test names, move that material to the Assessment table.
-- If the Assessment table does not have one row per governing principle, make the mapping explicit or explain why a principle is not assessable from the diff.
-- If the visible report starts debating implementation details before naming principles, move that material into Approach, Tradeoffs, or Review Guidance.
+- If the visible Abstraction Chain is not ordered from highest abstraction to lowest, reorder it before finalizing.
+- If the first-detected abstraction level is not marked with `*` and the note is missing, add both.
+- If a "how" row is really a best practice, principle, or desired property, move it to Best Practice Principles and replace it with a concrete technical approach or stop descending.
+- If the best practice principles mostly restate code changes, rewrite them as lifecycle, reliability, safety, operability, or user/developer-experience principles with 1-2 explanatory sentences.
+- If the best practice principles are phrased as "X should Y," rewrite them with active imperative verbs.
+- If there are more than 5 ungrouped principles, keep the most important 5 or group them.
+- If principle bullets include verdicts, filenames, commands, APIs, or test names, move that material to Assessment.
+- If Assessment is a table, rewrite it as recommendation-oriented subsections with principle, evaluation, description, recommendation, and confidence.
+- If the visible report starts debating implementation details before naming principles, move that material into This PR's Approach, Implementation Approach, Major Tradeoffs, or Review Guidance.
 
 ## Review Recommendation
 
