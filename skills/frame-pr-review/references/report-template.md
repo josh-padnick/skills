@@ -20,9 +20,9 @@ If this section names a specific database role, migration tool, command, file, r
 
 Show the chain that led to the chosen frame. Build it by starting with what the PR is actually doing, climbing upward with "Why is that important?" or "So we can do what?", then returning to the starting point and descending with concise "How?" answers. Display the final chain from highest abstraction to lowest abstraction. Bold the level that is the best framing for the human reviewer. Mark the level first detected from the PR with `*`.
 
-Use a compact two-column Markdown table with blank header cells: one column for numbers and one column for the level description. Do not use raw HTML because Codex may render it as escaped text. Label the top `Business goals` and the bottom `Implementation details`.
+Use a compact two-column Markdown table with blank header cells: one column for numbers and one column for the level description. Do not use raw HTML because Codex may render it as escaped text. Put the italic sentence `_Ordered from higher-level to lower-level._` immediately above the table.
 
-**Business goals**
+_Ordered from higher-level to lower-level._
 
 |  |  |
 | ---: | --- |
@@ -31,8 +31,6 @@ Use a compact two-column Markdown table with blank header cells: one column for 
 | 3 | **Best human-review frame.** |
 | 4 | * Concrete PR move first detected from the PR. |
 | 5 | Concise technical approach below the starting point. |
-
-**Implementation details**
 
 _`*` = Abstraction level first detected from the PR title/body/diff._
 

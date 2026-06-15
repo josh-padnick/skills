@@ -48,7 +48,7 @@ After climbing, return to the starting point and go downward by asking "How?" Ad
 
 Avoid inserting best practices, virtues, or principles into the chain as "how" steps. A sentence such as "keep runtime store startup permission-scoped" is a principle or practice, not a technical how. A sentence such as "remove the in-process migration runner and run migrations through explicit ops scripts" is a technical how.
 
-Show the chain in the report as a compact two-column Markdown table ordered from highest abstraction to lowest abstraction. Use one column for the step number and one column for the level description. Use blank header cells rather than named column headers, and do not use raw HTML because Codex may render it as escaped text. Label the top of the table `Business goals` and the bottom `Implementation details`.
+Show the chain in the report as a compact two-column Markdown table ordered from highest abstraction to lowest abstraction. Use one column for the step number and one column for the level description. Use blank header cells rather than named column headers, and do not use raw HTML because Codex may render it as escaped text. Put the italic sentence `_Ordered from higher-level to lower-level._` immediately above the table.
 
 1. Highest meaningful product or system goal.
 2. Intermediate capability, operating-model, lifecycle, ownership, timing, or policy levels.
@@ -61,7 +61,7 @@ Bold the level that is the best framing for the human reviewer to consider. The 
 
 For PR 143-style migration work, a good chain is:
 
-**Business goals**
+_Ordered from higher-level to lower-level._
 
 |  |  |
 | ---: | --- |
@@ -70,8 +70,6 @@ For PR 143-style migration work, a good chain is:
 | 3 | **Set up a maintainable, robust approach to database schema migrations.** |
 | 4 | * Move Postgres migrations to a Goose-managed setup. |
 | 5 | Remove the in-process Go migration runner/embed and replace it with explicit operating scripts. |
-
-**Implementation details**
 
 Choose the sweet spot: the level that gives the reviewer the most useful judgment frame while staying specific enough to guide review of this PR. If the frame names a database role, migration tool, command, file, class, route, protocol, or generated artifact, it is usually still describing the implementation answer. Climb one notch unless that primitive is itself the architectural subject.
 
@@ -218,7 +216,7 @@ Before finalizing the report, run a quick frame audit:
 - If Big Picture evaluates the frame or says it is strong/good/correct, remove that sentence or move the judgment to Assessment.
 - If the Abstraction Chain does not start with what the PR actually does, rebuild it from the PR title/body/diff before climbing upward.
 - If the visible Abstraction Chain is not ordered from highest abstraction to lowest, reorder it before finalizing.
-- If the visible Abstraction Chain is not a two-column Markdown table with numbers and descriptions, blank header cells, `Business goals` at the top, and `Implementation details` at the bottom, rewrite it.
+- If the visible Abstraction Chain is not a two-column Markdown table with numbers and descriptions, blank header cells, and `_Ordered from higher-level to lower-level._` immediately above it, rewrite it.
 - If the first-detected abstraction level is not marked with `*` and the note is missing, add both.
 - If a "how" row is really a best practice, principle, or desired property, move it to Best practice principles and replace it with a concrete technical approach or stop descending.
 - If the best practice principles mostly restate code changes, rewrite them as lifecycle, reliability, safety, operability, or user/developer-experience principles with 1-2 explanatory sentences.
