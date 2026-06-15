@@ -6,13 +6,28 @@ Use this template for a reviewer briefing. Trim sections that do not apply.
 
 Explain the broader engineering problem in 2-4 sentences. Name the abstraction level above the PR's stated task as a governing design question before describing the PR's answer.
 
-First, choose the highest review-useful frame from an implicit ladder: system goal -> subsystem capability -> lifecycle/operating-model question -> design direction -> implementation mechanism. Prefer "how should the system manage X across its lifecycle?" over a frame that names a role, tool, command, file, API, or other implementation mechanism.
+First, use the Abstraction Chain to choose the best review-useful frame: system goal -> subsystem capability -> lifecycle/operating-model question -> design direction -> implementation mechanism. Prefer a frame that names the durable engineering problem over one that names a role, tool, command, file, API, or other implementation mechanism.
 
-The first sentence should name the selected frame without mentioning implementation mechanisms. The second sentence can summarize the PR's answer. For migration work, prefer "where database schema evolution belongs in the application lifecycle" over "which database role runs migrations."
+The first sentence should name the selected frame without mentioning implementation mechanisms. The second sentence can summarize the PR's answer. For migration work, prefer "how the system should maintainably manage database schema migrations" over "which database role runs migrations" or "which function runs the migration tool."
 
 Fold the frame challenge into this section instead of creating a separate default heading. State whether the PR appears to be solving the right problem and name the main design question a reviewer should keep in mind. Mention alternatives only when they clarify the principles or would change the review outcome.
 
 If this section names a specific database role, migration tool, command, file, route, or generated artifact as the frame, rewrite it one notch higher and move that detail to Approach, Tradeoffs, or What To Review.
+
+## Abstraction Chain
+
+Show the chain that led to the chosen frame. Start with what the PR is actually doing, climb upward with "Why is that important?" or "So we can do what?", then return to the starting point and descend with concise "How?" answers. Bold the level that is the best framing for the human reviewer.
+
+Use a compact table or list:
+
+| Step | Direction | Question | Chain Level |
+| --- | --- | --- | --- |
+| 1 | Start | What is the PR doing? | Concrete PR move. |
+| 2 | Up | Why is that important? | Higher-level goal or capability. |
+| 3 | Up | So we can do what? | Broader system goal. |
+| 4 | Down | How? | Concise technical approach below the starting point. |
+
+Do not put best practices or principles in the chain as "how" rows. If a how answer is really a desired property, move it to Governing Principles and either replace it with a concrete technical mechanism or stop descending.
 
 ## Key Assumptions
 
