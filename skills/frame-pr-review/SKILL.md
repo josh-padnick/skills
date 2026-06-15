@@ -68,6 +68,12 @@ Database roles, goose commands, startup checks, and privilege scripts are design
 
 For PR 143-style work, the Big Picture should start closer to: "This PR is about where database schema evolution belongs in Fabrica's application lifecycle." Then explain that the PR's answer is to make schema convergence an explicit setup/deploy/test concern while app startup verifies compatibility. Mention database roles only after that, as one reason this lifecycle split matters.
 
+Use contrastive calibration when the PR is a well-framed implementation slice:
+
+- Reject: "The governing question is which database role should run schema convergence." This is an implementation constraint pretending to be the frame.
+- Reject: "The stronger frame is that runtime should only verify schema compatibility." This states the PR's chosen answer, not the broader question.
+- Prefer: "The governing question is where database schema evolution belongs in the application lifecycle, and how local setup, CI, deployment, runtime startup, and maintenance should divide responsibility." This leaves room to compare answers before explaining why the PR's answer is reasonable.
+
 ## Frame Challenge
 
 Before accepting the PR's stated goal, explicitly ask:
