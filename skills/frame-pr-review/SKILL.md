@@ -48,7 +48,7 @@ After climbing, return to the starting point and go downward by asking "How?" Ad
 
 Avoid inserting best practices, virtues, or principles into the chain as "how" steps. A sentence such as "keep runtime store startup permission-scoped" is a principle or practice, not a technical how. A sentence such as "remove the in-process migration runner and run migrations through explicit ops scripts" is a technical how.
 
-Show the chain in the report as a compact two-column table ordered from highest abstraction to lowest abstraction. Use one column for the step number and one column for the level description; do not add column headers. Use an HTML table when needed so the rendered table does not require headers. Label the top of the table `Business goals` and the bottom `Implementation details`.
+Show the chain in the report as a compact two-column Markdown table ordered from highest abstraction to lowest abstraction. Use one column for the step number and one column for the level description. Use blank header cells rather than named column headers, and do not use raw HTML because Codex may render it as escaped text. Label the top of the table `Business goals` and the bottom `Implementation details`.
 
 1. Highest meaningful product or system goal.
 2. Intermediate capability, operating-model, lifecycle, ownership, timing, or policy levels.
@@ -63,13 +63,13 @@ For PR 143-style migration work, a good chain is:
 
 **Business goals**
 
-<table>
-  <tr><td>1</td><td>Enable Fabrica to evolve quickly without compromising safety, reliability, or end-user UX.</td></tr>
-  <tr><td>2</td><td>Have a safe, efficient approach to evolving the database over time.</td></tr>
-  <tr><td>3</td><td><strong>Set up a maintainable, robust approach to database schema migrations.</strong></td></tr>
-  <tr><td>4</td><td>* Move Postgres migrations to a Goose-managed setup.</td></tr>
-  <tr><td>5</td><td>Remove the in-process Go migration runner/embed and replace it with explicit operating scripts.</td></tr>
-</table>
+|  |  |
+| ---: | --- |
+| 1 | Enable Fabrica to evolve quickly without compromising safety, reliability, or end-user UX. |
+| 2 | Have a safe, efficient approach to evolving the database over time. |
+| 3 | **Set up a maintainable, robust approach to database schema migrations.** |
+| 4 | * Move Postgres migrations to a Goose-managed setup. |
+| 5 | Remove the in-process Go migration runner/embed and replace it with explicit operating scripts. |
 
 **Implementation details**
 
@@ -210,7 +210,7 @@ Before finalizing the report, run a quick frame audit:
 - If Big Picture evaluates the frame or says it is strong/good/correct, remove that sentence or move the judgment to Assessment.
 - If the Abstraction Chain does not start with what the PR actually does, rebuild it from the PR title/body/diff before climbing upward.
 - If the visible Abstraction Chain is not ordered from highest abstraction to lowest, reorder it before finalizing.
-- If the visible Abstraction Chain is not a two-column table with numbers and descriptions, no column headers, `Business goals` at the top, and `Implementation details` at the bottom, rewrite it.
+- If the visible Abstraction Chain is not a two-column Markdown table with numbers and descriptions, blank header cells, `Business goals` at the top, and `Implementation details` at the bottom, rewrite it.
 - If the first-detected abstraction level is not marked with `*` and the note is missing, add both.
 - If a "how" row is really a best practice, principle, or desired property, move it to Best practice principles and replace it with a concrete technical approach or stop descending.
 - If the best practice principles mostly restate code changes, rewrite them as lifecycle, reliability, safety, operability, or user/developer-experience principles with 1-2 explanatory sentences.
