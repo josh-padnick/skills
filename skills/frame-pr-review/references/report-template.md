@@ -2,7 +2,7 @@
 
 Use this template for a reviewer briefing. Trim sections that do not apply.
 
-## Big Picture
+# Big picture
 
 Explain the broader engineering problem in 1-2 sentences. Name the abstraction level above the PR's stated task as a governing design question before describing the PR's answer.
 
@@ -14,27 +14,31 @@ Then create a second paragraph that summarizes the PR's answer. For migration wo
 
 Do not assert whether the frame or PR is strong, good, correct, or successful here. Save evaluation for Assessment.
 
-If this section names a specific database role, migration tool, command, file, route, or generated artifact as the frame, rewrite it one notch higher and move that detail to Implementation Approach, Major Tradeoffs, or What To Review.
+If this section names a specific database role, migration tool, command, file, route, or generated artifact as the frame, rewrite it one notch higher and move that detail to Implementation approach, Tradeoffs, or What to review.
 
-## Abstraction Chain
+## Abstraction chain
 
 Show the chain that led to the chosen frame. Build it by starting with what the PR is actually doing, climbing upward with "Why is that important?" or "So we can do what?", then returning to the starting point and descending with concise "How?" answers. Display the final chain from highest abstraction to lowest abstraction. Bold the level that is the best framing for the human reviewer. Mark the level first detected from the PR with `*`.
 
-Use a compact table or list:
+Use a compact two-column table with no column headers: one column for numbers and one column for the level description. Use an HTML table when needed so the rendered table does not require headers. Label the top `Business goals` and the bottom `Implementation details`.
 
-| Step | Direction | Question | Chain Level |
-| --- | --- | --- | --- |
-| 1 | Up | So we can do what? | Highest meaningful system or product goal. |
-| 2 | Up | Why is that important? | Intermediate goal or capability. |
-| 3 | Frame | Why is this the useful review frame? | **Best human-review frame.** |
-| 4 | * Start | What is the PR doing? | * Concrete PR move first detected from the PR. |
-| 5 | Down | How? | Concise technical approach below the starting point. |
+**Business goals**
+
+<table>
+  <tr><td>1</td><td>Highest meaningful system or product goal.</td></tr>
+  <tr><td>2</td><td>Intermediate goal or capability.</td></tr>
+  <tr><td>3</td><td><strong>Best human-review frame.</strong></td></tr>
+  <tr><td>4</td><td>* Concrete PR move first detected from the PR.</td></tr>
+  <tr><td>5</td><td>Concise technical approach below the starting point.</td></tr>
+</table>
+
+**Implementation details**
 
 _`*` = Abstraction level first detected from the PR title/body/diff._
 
-Do not put best practices or principles in the chain as "how" rows. If a how answer is really a desired property, move it to Best Practice Principles and either replace it with a concrete technical mechanism or stop descending.
+Do not put best practices or principles in the chain as "how" rows. If a how answer is really a desired property, move it to Best practice principles and either replace it with a concrete technical mechanism or stop descending.
 
-## Best Practice Principles
+## Best practice principles
 
 List up to 5 principles. Use more only when grouped under short labels. Start each item with an active imperative verb and idiomatic engineering language.
 
@@ -42,11 +46,11 @@ List up to 5 principles. Use more only when grouped under short labels. Start ea
 
 Principles should describe lifecycle, reliability, safety, operability, and user/developer-experience invariants. Avoid principles that merely restate implementation steps. Do not evaluate the PR here. Do not include filenames, command names, database roles, APIs, tests, or verdict words; those belong in Assessment.
 
-## This PR's Approach
+# This PR's approach
 
 Summarize the PR's design answer in 1-2 sentences. Stay above file-level details here; explain the operating-model choice, responsibility split, or contract change.
 
-## Key Assumptions
+## Key assumptions
 
 List 3-5 assumptions that drive the review. These should be the places where a human reviewer, author, or operator needs to confirm the context because the answer would change the recommendation.
 
@@ -58,13 +62,27 @@ Use a compact table:
 
 Use **Confident** when the PR, repo context, or standard engineering practice strongly supports the assumption. Use **Plausible** when it seems likely but local context matters. Use **Unsure** when the assumption materially affects the review and evidence is missing.
 
-## Implementation Approach
+## Implementation approach
 
 Summarize the main implementation moves by subsystem. Focus on how the PR answers the principles above: lifecycle boundaries, responsibility boundaries, data flow, public contracts, operational behavior, and any role/tool/command choices.
 
-## Assessment
+## Tradeoffs
+
+Describe the largest tradeoffs as two short lists:
+
+**What improves**
+
+- Concrete improvement.
+
+**What we give up**
+
+- Concrete cost, lost convenience, new obligation, or future risk.
+
+# Assessment
 
 Assess the PR against the principles above as one short subsection per recommendation, not as a table.
+
+## Recommendation or principle heading
 
 For each subsection, include:
 
@@ -76,19 +94,9 @@ For each subsection, include:
 
 Use **Strong** when the PR convincingly satisfies the principle with implementation plus tests/docs/ops wiring; **Good** when it mostly satisfies it with minor caveats; **Moderate** when important behavior, tests, docs, or ownership remain unclear; **Poor** when the PR conflicts with the principle or leaves a high-risk gap; and **Unknown** when evidence is insufficient without author or operator input.
 
-## Major Tradeoffs
+# Review
 
-Describe the largest tradeoffs as two short lists:
-
-**What Improves**
-
-- Concrete improvement.
-
-**What We Give Up**
-
-- Concrete cost, lost convenience, new obligation, or future risk.
-
-## What To Review
+## What to review
 
 Give a prioritized review route:
 
@@ -96,7 +104,7 @@ Give a prioritized review route:
 2. Tests and checks that prove the intended invariant.
 3. Docs, scripts, generated artifacts, or CI changes that must stay aligned.
 
-## Review Recommendation
+## My recommendation
 
 Give a rough recommendation:
 

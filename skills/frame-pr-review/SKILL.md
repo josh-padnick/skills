@@ -20,9 +20,9 @@ This is not a substitute for a detailed code review. It prepares the reviewer to
 5. Extract the best practice principles.
 6. Summarize this PR's approach.
 7. Identify key assumptions that need human judgment.
-8. Explain the implementation approach.
+8. Explain the implementation approach and tradeoffs.
 9. Assess the PR against the principles as recommendation-oriented sections.
-10. Explain tradeoffs and recommend how to review the code.
+10. Recommend how to review the code.
 
 When the user provides a PR URL, prefer the GitHub connector or `gh` for PR metadata, changed files, patch, review comments, CI status, and linked issues. If a local checkout is available, compare the PR branch against its base with Git commands and read touched docs/tests directly.
 
@@ -44,11 +44,11 @@ Many PRs are presented as a crisp implementation question even though the real d
 
 Start with what the PR is actually doing, stated in one sentence from the PR title/body/diff. Then climb upward by repeatedly asking "Why is that important?" or "So we can do what?" Stop climbing when the answer becomes a broad product or system goal that is still meaningful for this PR.
 
-After climbing, return to the starting point and go downward by asking "How?" Add only concise technical answers that name the chosen design direction, mechanism, workflow, API, data flow, or file-level move. If a "how" answer needs more than one sentence, stop descending; those implementation details belong in Implementation Approach, Assessment, or What To Review.
+After climbing, return to the starting point and go downward by asking "How?" Add only concise technical answers that name the chosen design direction, mechanism, workflow, API, data flow, or file-level move. If a "how" answer needs more than one sentence, stop descending; those implementation details belong in Implementation approach, Assessment, or What to review.
 
 Avoid inserting best practices, virtues, or principles into the chain as "how" steps. A sentence such as "keep runtime store startup permission-scoped" is a principle or practice, not a technical how. A sentence such as "remove the in-process migration runner and run migrations through explicit ops scripts" is a technical how.
 
-Show the chain in the report as a list or compact table ordered from highest abstraction to lowest abstraction:
+Show the chain in the report as a compact two-column table ordered from highest abstraction to lowest abstraction. Use one column for the step number and one column for the level description; do not add column headers. Use an HTML table when needed so the rendered table does not require headers. Label the top of the table `Business goals` and the bottom `Implementation details`.
 
 1. Highest meaningful product or system goal.
 2. Intermediate capability, operating-model, lifecycle, ownership, timing, or policy levels.
@@ -61,11 +61,17 @@ Bold the level that is the best framing for the human reviewer to consider. The 
 
 For PR 143-style migration work, a good chain is:
 
-- Enable Fabrica to evolve quickly without compromising safety, reliability, or end-user UX.
-- Have a safe, efficient approach to evolving the database over time.
-- **Set up a maintainable, robust approach to database schema migrations.**
-- * Move Postgres migrations to a Goose-managed setup.
-- Remove the in-process Go migration runner/embed and replace it with explicit operating scripts.
+**Business goals**
+
+<table>
+  <tr><td>1</td><td>Enable Fabrica to evolve quickly without compromising safety, reliability, or end-user UX.</td></tr>
+  <tr><td>2</td><td>Have a safe, efficient approach to evolving the database over time.</td></tr>
+  <tr><td>3</td><td><strong>Set up a maintainable, robust approach to database schema migrations.</strong></td></tr>
+  <tr><td>4</td><td>* Move Postgres migrations to a Goose-managed setup.</td></tr>
+  <tr><td>5</td><td>Remove the in-process Go migration runner/embed and replace it with explicit operating scripts.</td></tr>
+</table>
+
+**Implementation details**
 
 Choose the sweet spot: the level that gives the reviewer the most useful judgment frame while staying specific enough to guide review of this PR. If the frame names a database role, migration tool, command, file, class, route, protocol, or generated artifact, it is usually still describing the implementation answer. Climb one notch unless that primitive is itself the architectural subject.
 
@@ -115,7 +121,7 @@ State the frame as a question before stating the PR's answer. A question such as
 
 For example, if a PR says "move migrations to an external ops command," the broader frame is not only "remove startup migrations" or "which role runs goose." It is: "How should Fabrica maintainably manage database schema migrations as the product and deployment surfaces evolve?" Then evaluate whether the PR's answer, such as explicit migration/setup commands plus startup compatibility checks, follows from sound lifecycle, reliability, and operational principles.
 
-## Best Practice Principles
+## Best practice principles
 
 Derive up to 5 principles that should govern the PR. If more than 5 are truly necessary, group them under short labels rather than listing a long flat set.
 
@@ -133,11 +139,11 @@ Examples:
 - Rehearse the production operating order in local and CI workflows: convenience paths should not teach behavior that production cannot rely on.
 - Move docs, rules, and tests with the contract: lifecycle changes only stick when the repo's instructions and checks say the same thing.
 
-## This PR's Approach
+## This PR's approach
 
 Summarize the PR's design answer in 1-2 sentences. Stay above file-level details here; explain the operating-model choice, responsibility split, or contract change.
 
-## Key Assumptions
+## Key assumptions
 
 Identify 3-5 assumptions that drive the PR's direction or the review recommendation. These should be the places where human judgment, product context, or operational context matters most.
 
@@ -151,7 +157,7 @@ Focus on assumptions that would change the review outcome if false. Avoid minor 
 
 ## Assessment
 
-After Implementation Approach, assess the PR against the best practice principles as one short subsection per recommendation, not as a table.
+After Tradeoffs, assess the PR against the best practice principles as one short subsection per recommendation, not as a table. Put each recommendation under a `##` heading inside the top-level `# Assessment` section.
 
 Each subsection should have a recommendation-oriented heading, then these fields:
 
@@ -180,7 +186,19 @@ Keep the output reviewer-oriented:
 - Prefer "what matters for review" over exhaustive summary.
 - State uncertainty and where to verify it.
 - Separate "this is the intended design" from "this diff proves it."
-- Present the report in this order: Big Picture, Abstraction Chain, Best Practice Principles, This PR's Approach, Key Assumptions, Implementation Approach, Assessment, Major Tradeoffs, What To Review, and Review Recommendation.
+- Present the report with this heading hierarchy and order:
+  - `# Big picture`
+  - `## Abstraction chain`
+  - `## Best practice principles`
+  - `# This PR's approach`
+  - `## Key assumptions`
+  - `## Implementation approach`
+  - `## Tradeoffs`
+  - `# Assessment`
+  - `## <Each principle or recommendation>`
+  - `# Review`
+  - `## What to review`
+  - `## My recommendation`
 - Do not make "Frame Challenge" a default top-level output section. Use it as internal reasoning, then fold the conclusion into the Big Picture unless the user explicitly asks to see the challenge separately.
 - Call out cross-cutting risks: lifecycle order, permissions, generated artifacts, backwards-incompatible behavior, data migration safety, local/CI/prod drift, test realism, and docs drift.
 - Give the reviewer a rough route through the diff: first files to read, tests to scrutinize, commands to run, and questions to ask.
@@ -192,16 +210,17 @@ Before finalizing the report, run a quick frame audit:
 - If Big Picture evaluates the frame or says it is strong/good/correct, remove that sentence or move the judgment to Assessment.
 - If the Abstraction Chain does not start with what the PR actually does, rebuild it from the PR title/body/diff before climbing upward.
 - If the visible Abstraction Chain is not ordered from highest abstraction to lowest, reorder it before finalizing.
+- If the visible Abstraction Chain is not a two-column table with numbers and descriptions, no column headers, `Business goals` at the top, and `Implementation details` at the bottom, rewrite it.
 - If the first-detected abstraction level is not marked with `*` and the note is missing, add both.
-- If a "how" row is really a best practice, principle, or desired property, move it to Best Practice Principles and replace it with a concrete technical approach or stop descending.
+- If a "how" row is really a best practice, principle, or desired property, move it to Best practice principles and replace it with a concrete technical approach or stop descending.
 - If the best practice principles mostly restate code changes, rewrite them as lifecycle, reliability, safety, operability, or user/developer-experience principles with 1-2 explanatory sentences.
 - If the best practice principles are phrased as "X should Y," rewrite them with active imperative verbs.
 - If there are more than 5 ungrouped principles, keep the most important 5 or group them.
 - If principle bullets include verdicts, filenames, commands, APIs, or test names, move that material to Assessment.
 - If Assessment is a table, rewrite it as recommendation-oriented subsections with principle, evaluation, description, recommendation, and confidence.
-- If the visible report starts debating implementation details before naming principles, move that material into This PR's Approach, Implementation Approach, Major Tradeoffs, or Review Guidance.
+- If the visible report starts debating implementation details before naming principles, move that material into This PR's approach, Implementation approach, Tradeoffs, or Review Guidance.
 
-## Review Recommendation
+## My recommendation
 
 End with a concrete recommendation:
 
