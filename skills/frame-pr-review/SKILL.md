@@ -18,9 +18,10 @@ This is not a substitute for a detailed code review. It prepares the reviewer to
 3. Build an abstraction ladder from high-level goal to concrete implementation.
 4. Choose the highest review-useful frame.
 5. Extract the governing principles.
-6. Assess the PR against those principles.
-7. Explain the implementation approach and tradeoffs.
-8. Recommend how to review the code.
+6. Identify key assumptions that need human judgment.
+7. Explain the implementation approach.
+8. Assess the PR against the principles.
+9. Explain tradeoffs and recommend how to review the code.
 
 When the user provides a PR URL, prefer the GitHub connector or `gh` for PR metadata, changed files, patch, review comments, CI status, and linked issues. If a local checkout is available, compare the PR branch against its base with Git commands and read touched docs/tests directly.
 
@@ -94,7 +95,9 @@ For example, if a PR says "move migrations to an external ops command," the broa
 
 Derive 3-7 principles that should govern the PR. Keep them concrete enough to evaluate.
 
-Good principles are about invariants, lifecycle expectations, and responsibility boundaries, not preferences or implementation steps. State each principle in implementation-independent language first; then, if useful, add a short verdict about how the PR measures up. Do not let file references or command names become the principle.
+Good principles are about invariants, lifecycle expectations, and responsibility boundaries, not preferences or implementation steps. State each principle in implementation-independent language first. Do not evaluate the PR in the governing-principles list.
+
+For each principle, add 1-2 concise sentences explaining what the principle means, why it matters, and how a reviewer should apply it. Avoid file references, command names, test names, database roles, APIs, or verdict words in this section; those belong in Assessment.
 
 Examples:
 
@@ -105,7 +108,34 @@ Examples:
 - CI should exercise the lifecycle and failure modes the deployed app relies on.
 - Generated code, docs, and tests should move with the contract they describe.
 
-After naming the principles, assess whether the PR upholds them, partially upholds them, violates them, or leaves them unproven. Use evidence sparingly: name representative files, tests, commands, docs, or missing checks only after the principle is clear.
+## Key Assumptions
+
+Identify 3-5 assumptions that drive the PR's direction or the review recommendation. These should be the places where human judgment, product context, or operational context matters most.
+
+For each assumption, state a confidence level:
+
+- **Confident**: the PR, repo context, or common engineering practice strongly supports it.
+- **Plausible**: it seems likely, but a reviewer should verify the local or organizational context.
+- **Unsure**: the assumption materially affects the review, and evidence is missing or ambiguous.
+
+Focus on assumptions that would change the review outcome if false. Avoid minor uncertainties and facts that the diff already proves.
+
+## Assessment Pass
+
+After Approach Taken, assess the PR against the governing principles in a table with these columns:
+
+| Principle | Evaluation | Description |
+| --- | --- | --- |
+
+Use this evaluation scale:
+
+- **Strong**: convincingly satisfies the principle, with direct implementation support and meaningful tests, docs, or operational wiring.
+- **Good**: satisfies the principle with minor caveats or follow-up questions.
+- **Moderate**: directionally aligned, but important behavior, docs, tests, or operational ownership remains unclear.
+- **Poor**: conflicts with the principle or leaves a high-risk gap.
+- **Unknown**: evidence is insufficient without author or operator input.
+
+Use evidence sparingly in the Description column: name representative files, tests, commands, docs, or missing checks only after the principle is clear.
 
 ## Analysis Shape
 
@@ -116,7 +146,7 @@ Keep the output reviewer-oriented:
 - Prefer "what matters for review" over exhaustive summary.
 - State uncertainty and where to verify it.
 - Separate "this is the intended design" from "this diff proves it."
-- Present the report in this order: big-picture frame, governing principles, PR approach, tradeoffs and review route.
+- Present the report in this order: big-picture frame, key assumptions, governing principles, PR approach, assessment, tradeoffs, and review route.
 - Do not make "Frame Challenge" a default top-level output section. Use it as internal reasoning, then fold the conclusion into the Big Picture unless the user explicitly asks to see the challenge separately.
 - Call out cross-cutting risks: lifecycle order, permissions, generated artifacts, backwards-incompatible behavior, data migration safety, local/CI/prod drift, test realism, and docs drift.
 - Give the reviewer a rough route through the diff: first files to read, tests to scrutinize, commands to run, and questions to ask.
@@ -125,8 +155,9 @@ Before finalizing the report, run a quick frame audit:
 
 - If the Big Picture's governing question mentions a database role, CLI, file, function, or command, rewrite it one notch higher.
 - If the first paragraph could only apply to the chosen implementation, rewrite it so alternatives could be compared.
-- If the principles mostly restate code changes, rewrite them as lifecycle, reliability, safety, operability, or user/developer-experience principles.
-- If principle bullets lead with filenames, commands, APIs, or test names, rewrite them so the principle comes first and the evidence follows.
+- If the principles mostly restate code changes, rewrite them as lifecycle, reliability, safety, operability, or user/developer-experience principles with 1-2 explanatory sentences.
+- If principle bullets include verdicts, filenames, commands, APIs, or test names, move that material to the Assessment table.
+- If the Assessment table does not have one row per governing principle, make the mapping explicit or explain why a principle is not assessable from the diff.
 - If the visible report starts debating implementation details before naming principles, move that material into Approach, Tradeoffs, or Review Guidance.
 
 ## Review Recommendation
