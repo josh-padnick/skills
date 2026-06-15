@@ -40,9 +40,11 @@ Do not put best practices or principles in the chain as "how" rows. If a how ans
 
 ## Best practice principles
 
-List up to 5 principles. Use more only when grouped under short labels. Start each item with an active imperative verb and idiomatic engineering language.
+List up to 5 principles. Use more only when grouped under short labels. Start each item with an active imperative verb and idiomatic engineering language. Format each principle as its own subsection so readers can scan the principle names without reading the details.
 
-- **Principle**: Explanation of the invariant and why it matters. Briefly describe how reviewers should apply it.
+### Principle name
+
+Explain the invariant in 1-2 concise sentences: what it means, why it matters, and how reviewers should apply it.
 
 Principles should describe lifecycle, reliability, safety, operability, and user/developer-experience invariants. Avoid principles that merely restate implementation steps. Do not evaluate the PR here. Do not include filenames, command names, database roles, APIs, tests, or verdict words; those belong in Assessment.
 
@@ -54,11 +56,12 @@ Summarize the PR's design answer in 1-2 sentences. Stay above file-level details
 
 List 3-5 assumptions that drive the review. These should be the places where a human reviewer, author, or operator needs to confirm the context because the answer would change the recommendation.
 
-Use a compact table:
+Use a compact table. Keep the assumption itself short and plain. Put policy nuance, operational context, and evidence in `Why It Matters`.
 
 | Assumption | Confidence | Why It Matters |
 | --- | --- | --- |
-| Assumption stated as a claim. | Confident / Plausible / Unsure | How this assumption affects the design or review route. |
+| We can break migrate-on-startup. | Confident / Plausible / Unsure | Explain here that the repo is pre-v0.1, so a compatibility shim may not be required. |
+| Hosted deployment will migrate schemas prior to app startup. | Confident / Plausible / Unsure | Explain here how this affects deploy sequencing and whether runtime startup can become verification-only. |
 
 Use **Confident** when the PR, repo context, or standard engineering practice strongly supports the assumption. Use **Plausible** when it seems likely but local context matters. Use **Unsure** when the assumption materially affects the review and evidence is missing.
 

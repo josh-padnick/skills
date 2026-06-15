@@ -129,15 +129,21 @@ Good principles are about invariants, lifecycle expectations, and responsibility
 
 Phrase principles with active verbs in imperative form, using idiomatic engineering language. Prefer "Make the database schema evolution lifecycle explicit" over "Schema evolution should have an explicit lifecycle." Prefer "Separate migration permissions and application runtime permissions" over "Migration authority and application authority should be separated."
 
-For each principle, add 1-2 concise sentences explaining what the principle means, why it matters, and how a reviewer should apply it. Avoid file references, command names, test names, database roles, APIs, or verdict words in this section; those belong in Assessment.
+Format each principle as its own `### <Principle>` subsection so readers can scan the principle names without reading the details. Under each subsection, add 1-2 concise sentences explaining what the principle means, why it matters, and how a reviewer should apply it. Avoid file references, command names, test names, database roles, APIs, or verdict words in this section; those belong in Assessment.
 
 Examples:
 
-- Make the database schema evolution lifecycle explicit: local setup, CI, deployment, runtime startup, and maintenance each need a known responsibility.
-- Keep runtime startup predictable: serving processes should either start against a compatible schema or fail clearly before serving.
-- Separate migration permissions and application runtime permissions: schema-changing work may need broader database permissions than request-serving code.
-- Rehearse the production operating order in local and CI workflows: convenience paths should not teach behavior that production cannot rely on.
-- Move docs, rules, and tests with the contract: lifecycle changes only stick when the repo's instructions and checks say the same thing.
+### Make the database schema evolution lifecycle explicit
+
+Local setup, CI, deployment, runtime startup, and maintenance each need a known responsibility.
+
+### Keep runtime startup predictable
+
+Serving processes should either start against a compatible schema or fail clearly before serving.
+
+### Separate migration permissions and application runtime permissions
+
+Schema-changing work may need broader database permissions than request-serving code.
 
 ## This PR's approach
 
@@ -146,6 +152,8 @@ Summarize the PR's design answer in 1-2 sentences. Stay above file-level details
 ## Key assumptions
 
 Identify 3-5 assumptions that drive the PR's direction or the review recommendation. These should be the places where human judgment, product context, or operational context matters most.
+
+Write each assumption as a short, plain-English claim. Put the nuance, policy basis, or operational rationale in the explanation rather than the assumption text. Prefer "We can break migrate-on-startup" over "Pre-v0.1 compatibility policy allows removing migrate-on-startup without a shim." Prefer "Hosted deployment will migrate schemas prior to app startup" over "Hosted deployment can add a pre-start migration/provisioning step."
 
 For each assumption, state a confidence level:
 
@@ -215,8 +223,10 @@ Before finalizing the report, run a quick frame audit:
 - If a "how" row is really a best practice, principle, or desired property, move it to Best practice principles and replace it with a concrete technical approach or stop descending.
 - If the best practice principles mostly restate code changes, rewrite them as lifecycle, reliability, safety, operability, or user/developer-experience principles with 1-2 explanatory sentences.
 - If the best practice principles are phrased as "X should Y," rewrite them with active imperative verbs.
+- If the best practice principles are written as bullets, rewrite them as `###` subsections with 1-2 concise explanatory sentences under each.
 - If there are more than 5 ungrouped principles, keep the most important 5 or group them.
 - If principle bullets include verdicts, filenames, commands, APIs, or test names, move that material to Assessment.
+- If the assumptions use formal policy wording or long implementation phrasing, rewrite the assumption names as short plain-English claims and move the details into the explanation column.
 - If Assessment is a table, rewrite it as recommendation-oriented subsections with principle, evaluation, description, recommendation, and confidence.
 - If the visible report starts debating implementation details before naming principles, move that material into This PR's approach, Implementation approach, Tradeoffs, or Review Guidance.
 
